@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Production builds
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# VS Code local settings
+.vscode/
+
+# AI/model files - later
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# Python - later
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Dataset/model outputs - later
+ai/datasets/raw/
+ai/checkpoints/
+ai/models/

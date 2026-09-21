@@ -1,0 +1,104 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #f8fafc;
+  color: #111827;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.navbar {
+  height: 72px;
+  padding: 0 8%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar h2 {
+  margin: 0;
+}
+
+.navbar nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #374151;
+}
+
+.navbar button {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.hero {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 8%;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 850px;
+}
+
+.tag {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.hero h1 {
+  font-size: clamp(42px, 6vw, 72px);
+  line-height: 1.05;
+  margin: 20px 0;
+}
+
+.description {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 19px;
+  line-height: 1.7;
+  color: #6b7280;
+}
+
+.actions {
+  margin-top: 35px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.actions button {
+  padding: 14px 24px;
+  border-radius: 9px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: none;
+  background: #111827;
+  color: white;
+}
+
+.secondary-button {
+  background: white;
+  border: 1px solid #d1d5db;
+}
