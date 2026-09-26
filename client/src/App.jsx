@@ -1,63 +1,50 @@
-import { useEffect, useState } from "react";
+import {
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
+
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import AgentDashboard from "./pages/AgentDashboard";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+
 import "./App.css";
 
 function App() {
-  const [apiStatus, setApiStatus] = useState("Checking API...");
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api/health")
-      .then((response) => response.json())
-      .then((data) => {
-        setApiStatus(data.status);
-      })
-      .catch(() => {
-        setApiStatus("offline");
-      });
-  }, []);
-
   return (
-    <div className="app">
-      <header className="navbar">
-        <h2>PitchPilot AI</h2>
+    <Routes>
+      <Route
+        path="/"
+        element={<LandingPage />}
+      />
 
-        <nav>
-          <a href="#features">Features</a>
-          <a href="#about">About</a>
-          <button>Login</button>
-        </nav>
-      </header>
+      <Route
+        path="/login"
+        element={<LoginPage />}
+      />
 
-      <main className="hero">
-        <div className="hero-content">
-          <p className="tag">AI-POWERED SALES TRAINING</p>
+      <Route
+        path="/register"
+        element={<RegisterPage />}
+      />
 
-          <h1>
-            Practice conversations.
-            <br />
-            Improve your sales.
-          </h1>
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <AgentDashboard />
+          </ProtectedRoute>
+        }
+      />
 
-          <p className="description">
-            Train with realistic AI-powered customer simulations, receive
-            personalized feedback and develop the conversational skills needed
-            for real sales interactions.
-          </p>
-
-          <div className="actions">
-            <button className="primary-button">
-              Start Training
-            </button>
-
-            <button className="secondary-button">
-              Learn More
-            </button>
-          </div>
-        </div>
-      </main>
-      <footer className="footer">
-        <p>API Status: {apiStatus}</p>
-      </footer>
-    </div>
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
+      />
+    </Routes>
   );
 }
 
