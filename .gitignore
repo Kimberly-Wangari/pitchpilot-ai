@@ -23,19 +23,19 @@ Thumbs.db
 # VS Code local settings
 .vscode/
 
-# AI/model files - later
+# AI/model files 
 *.bin
 *.safetensors
 *.pt
 *.pth
 
-# Python - later
+# Python 
 __pycache__/
 *.pyc
 .venv/
 venv/
 
-# Dataset/model outputs - later
+# Dataset/model outputs 
 ai/datasets/raw/
 ai/checkpoints/
 ai/models/

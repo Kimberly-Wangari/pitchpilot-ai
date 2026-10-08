@@ -259,3 +259,365 @@ a {
     gap: 8px;
   }
 }
+
+/* Training Scenario Library */
+
+.scenario-page {
+  min-height: 100vh;
+  padding: 48px 7%;
+  background: #f7f8fc;
+}
+
+.scenario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  margin-bottom: 32px;
+}
+
+.scenario-header h1 {
+  margin: 6px 0 10px;
+  font-size: 2.2rem;
+}
+
+.scenario-header p {
+  max-width: 650px;
+}
+
+.scenario-eyebrow {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+}
+
+.scenario-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.scenario-filters input,
+.scenario-filters select {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #d8dbe5;
+  border-radius: 10px;
+  background: white;
+  font: inherit;
+}
+
+.scenario-count {
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.scenario-card {
+  background: white;
+  padding: 24px;
+  border: 1px solid #e6e8ef;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scenario-card h2 {
+  margin: 0;
+}
+
+.scenario-card p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.scenario-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.difficulty,
+.scenario-category {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.difficulty {
+  background: #eef1f7;
+}
+
+.scenario-category {
+  background: #f4f4f4;
+}
+
+.scenario-competencies {
+  margin-top: auto;
+}
+
+.competency-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.competency-list span {
+  padding: 6px 9px;
+  background: #f1f3f8;
+  border-radius: 7px;
+  font-size: 0.8rem;
+}
+
+.primary-button,
+.secondary-button {
+  display: inline-block;
+  width: fit-content;
+  padding: 11px 16px;
+  border-radius: 9px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.primary-button {
+  background: #111827;
+  color: white;
+}
+
+.secondary-button {
+  background: white;
+  color: #111827;
+  border: 1px solid #d8dbe5;
+}
+
+.scenario-error,
+.scenario-empty {
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+@media (max-width: 800px) {
+  .scenario-header {
+    flex-direction: column;
+  }
+
+  .scenario-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .scenario-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Scenario Details */
+
+.scenario-details-page {
+  min-height: 100vh;
+  padding: 48px 7%;
+  background: #f7f8fc;
+}
+
+.details-navigation {
+  max-width: 1000px;
+  margin: 0 auto 20px;
+}
+
+.scenario-details-card {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 36px;
+  background: white;
+  border: 1px solid #e6e8ef;
+  border-radius: 18px;
+}
+
+.scenario-details-card h1 {
+  margin: 24px 0 12px;
+  font-size: 2.2rem;
+}
+
+.scenario-details-description {
+  max-width: 750px;
+  margin-bottom: 32px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.detail-section {
+  padding: 22px;
+  background: #f8f9fc;
+  border: 1px solid #eceef4;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+
+.detail-section h2 {
+  margin: 7px 0 10px;
+  font-size: 1.05rem;
+}
+
+.detail-section p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.objective-section {
+  background: #f4f6fb;
+}
+
+.start-training-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  margin-top: 14px;
+  padding-top: 28px;
+  border-top: 1px solid #e6e8ef;
+}
+
+.start-training-section h2 {
+  margin: 0 0 6px;
+}
+
+.start-training-section p {
+  margin: 0;
+}
+
+.start-training-section .primary-button {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .scenario-details-page {
+    padding: 28px 5%;
+  }
+
+  .scenario-details-card {
+    padding: 22px;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .start-training-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Training Session */
+
+.training-page {
+  min-height: 100vh;
+  padding: 40px 7%;
+  background: #f7f8fc;
+}
+
+.training-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.training-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.training-header h1 {
+  margin: 5px 0;
+}
+
+.conversation-panel {
+  min-height: 600px;
+  background: white;
+  border: 1px solid #e6e8ef;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.conversation-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.conversation-empty h2 {
+  margin-bottom: 8px;
+}
+
+.message-input-area {
+  display: flex;
+  gap: 12px;
+  padding: 18px;
+  border-top: 1px solid #e6e8ef;
+}
+
+.message-input-area input {
+  flex: 1;
+  padding: 13px 15px;
+  border: 1px solid #d8dbe5;
+  border-radius: 9px;
+  font: inherit;
+}
+
+.message-input-area button {
+  border: none;
+  font: inherit;
+}
+
+@media (max-width: 700px) {
+  .training-header {
+    flex-direction: column;
+  }
+
+  .message-input-area {
+    flex-direction: column;
+  }
+
+  .message-input-area button {
+    width: 100%;
+  }
+}

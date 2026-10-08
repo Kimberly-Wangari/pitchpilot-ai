@@ -8,6 +8,9 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AgentDashboard from "./pages/AgentDashboard";
+import ScenarioLibrary from "./pages/scenarioLibrary";
+import ScenarioDetails from "./pages/ScenarioDetails";
+import TrainingSession from "./pages/TrainingSession";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -36,6 +39,33 @@ function App() {
         element={
           <ProtectedRoute>
             <AgentDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/scenarios"
+        element={
+          <ProtectedRoute>
+            <ScenarioLibrary />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/scenarios/:id"
+        element={
+          <ProtectedRoute>
+            <ScenarioDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/training/:sessionId"
+        element={
+          <ProtectedRoute>
+            <TrainingSession />
           </ProtectedRoute>
         }
       />
