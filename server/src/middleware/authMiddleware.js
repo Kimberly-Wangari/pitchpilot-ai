@@ -17,7 +17,11 @@ function authenticateToken(req, res, next) {
       process.env.JWT_SECRET
     );
 
-    req.user = decoded;
+    req.user = {
+      id: decoded.id,
+      email: decoded.email,
+      role: decoded.role,
+    };
 
     next();
   } catch (error) {

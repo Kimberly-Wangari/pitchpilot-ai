@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 function AgentDashboard() {
   const navigate = useNavigate();
@@ -57,9 +58,11 @@ function AgentDashboard() {
               AI-powered customers.
             </p>
 
-            <button>
-              Browse Scenarios
-            </button>
+            <Link to="/scenarios">
+              <button>
+                Browse Scenarios
+              </button>
+            </Link>
           </article>
 
           <article className="dashboard-card">

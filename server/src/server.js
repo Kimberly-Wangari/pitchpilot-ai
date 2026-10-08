@@ -1,14 +1,21 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
-
+const scenarioRoutes = require("./routes/scenarioRoutes");
 const authRoutes = require("./routes/authRoutes");
+require("dotenv").config();
+const trainingSessionRoutes = require("./routes/trainingSessionRoutes");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// Scenario routes
+app.use("/api/scenarios", scenarioRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/training-sessions", trainingSessionRoutes);
+
+
+
 
 const pool = require("./config/database");
 
