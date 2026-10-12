@@ -11,6 +11,10 @@ const {
 
 const router = express.Router();
 
+const {
+  getConversationMessages,
+  sendConversationMessage,
+} = require("../controllers/conversationController");
 // Create a training session
 router.post(
   "/",
@@ -25,4 +29,17 @@ router.get(
   getTrainingSessionById
 );
 
+// Retrieve conversation history
+router.get(
+  "/:sessionId/messages",
+  authenticateToken,
+  getConversationMessages
+);
+
+// Send a message during training
+router.post(
+  "/:sessionId/messages",
+  authenticateToken,
+  sendConversationMessage
+);
 module.exports = router;
