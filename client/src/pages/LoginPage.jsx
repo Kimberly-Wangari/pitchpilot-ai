@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,  useSearchParams, } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
+import PasswordInput from "../components/PasswordInput";
+import SocialLogin from "../components/SocialLogin";
+
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -12,6 +15,29 @@ function LoginPage() {
 
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  
+ 
+const [searchParams] = useSearchParams();
+
+const oauthError = searchParams.get("oauth_error");
+
+const oauthMessages = {
+  invalid_state: "Google sign-in expired. Please try again.",
+  unverified_identity:
+    "Google could not verify your email address.",
+  missing_email:
+    "Google did not provide an email address.",
+  existing_account:
+    "An account already uses this email. Sign in with your existing method.",
+  inactive_account:
+    "This account is inactive.",
+  authentication_failed:
+    "Google sign-in could not be completed. Please try again.",
+};
+
+const displayedError =
+  error || (oauthError ? oauthMessages[oauthError] : "");
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,9 +46,20 @@ function LoginPage() {
     setSubmitting(true);
 
     try {
-      await login(email, password);
+      const result = await login(email, password);
 
-      navigate("/dashboard");
+switch (result.user.role) {
+  case "manager":
+    navigate("/manager/dashboard", { replace: true });
+    break;
+
+  case "agent":
+    navigate("/dashboard", { replace: true });
+    break;
+
+  default:
+    navigate("/", { replace: true });
+}
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -46,12 +83,11 @@ function LoginPage() {
           Sign in to continue your sales training.
         </p>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-
+        {displayedError && (
+  <div className="error-message">
+    {displayedError}
+  </div>
+)}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">
@@ -74,15 +110,15 @@ function LoginPage() {
               Password
             </label>
 
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) =>
-                setPassword(event.target.value)
-              }
-              required
-            />
+            
+<PasswordInput
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  placeholder="Enter your password"
+  autoComplete="current-password"
+  required={true}
+/>
+
           </div>
 
           <button
@@ -94,14 +130,32 @@ function LoginPage() {
           </button>
         </form>
 
-        <p className="auth-footer">
+        <SocialLogin />
+
+                <p className="auth-footer">
           New to PitchPilot?{" "}
           <Link to="/register">
             Create an account
           </Link>
         </p>
+         <p className="auth-footer">
+  Are you a sales manager?{" "}
+  <Link to="/manager/login">
+    Manager Login
+  </Link>
+</p>
+      </div>
+
+      {/* Login landscape image */}
+      <div className="auth-image-panel auth-login-image">
+        <div className="auth-image-overlay">
+          <span>WELCOME BACK</span>
+          <h2>Every great conversation starts somewhere.</h2>
+          <p>Practice with purpose. Grow with confidence.</p>
+        </div>
       </div>
     </div>
+      
   );
 }
 

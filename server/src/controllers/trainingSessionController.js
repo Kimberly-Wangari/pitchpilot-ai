@@ -110,6 +110,5 @@ const getTrainingSessionById = async (req, res) => {
 
 module.exports = {
   createTrainingSession,
-
   getTrainingSessionById,
 };

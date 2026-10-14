@@ -621,3 +621,241 @@ a {
     width: 100%;
   }
 }
+.conversation-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 300px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.chat-message {
+  max-width: 75%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  overflow-wrap: anywhere;
+}
+
+.chat-message.agent {
+  align-self: flex-end;
+  background-color: #dbeafe;
+  color: #1e3a8a;
+}
+
+.chat-message.customer {
+  align-self: flex-start;
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.chat-message.system {
+  align-self: center;
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.chat-message p {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+}
+
+.message-input-area {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+}
+
+.message-input-area input {
+  flex: 1;
+  min-width: 0;
+}
+
+.password-field {
+  position: relative;
+  width: 100%;
+}
+
+.password-field input {
+  width: 100%;
+  padding: 12px 46px 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.password-toggle:hover {
+  color: #111827;
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #ffffff;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* =========================================
+   PITCHPILOT AI — AUTH LANDSCAPE IMAGES
+   ========================================= */
+
+/* Keep the existing authentication page styling */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-height: 100vh;
+  padding: 40px 24px;
+  background: #f7f8fc;
+}
+
+/* Existing form card */
+.auth-page > .auth-card {
+  position: relative;
+  z-index: 1;
+  flex: 0 1 520px;
+  width: 100%;
+  max-width: 520px;
+  min-width: 0;
+  margin: 0;
+  border-radius: 20px 0 0 20px;
+  background: #ffffff;
+  box-shadow: 0 15px 50px rgba(45, 50, 79, 0.08);
+}
+
+/* Landscape panel */
+.auth-image-panel {
+  position: relative;
+  flex: 0 1 520px;
+  width: 100%;
+  max-width: 520px;
+  min-width: 0;
+  min-height: 620px;
+  align-self: stretch;
+  overflow: hidden;
+  border-radius: 0 20px 20px 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* LOGIN — Mountain lake */
+.auth-login-image {
+  background-image:
+    linear-gradient(
+      to top,
+      rgba(30, 36, 61, 0.72),
+      rgba(30, 36, 61, 0.02) 65%
+    ),
+    url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=85");
+}
+
+/* SIGN UP — Mountain landscape */
+.auth-register-image {
+  background-image:
+    linear-gradient(
+      to top,
+      rgba(30, 36, 61, 0.72),
+      rgba(30, 36, 61, 0.02) 65%
+    ),
+    url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85");
+}
+
+/* Text on the photograph */
+.auth-image-overlay {
+  position: absolute;
+  right: 35px;
+  bottom: 40px;
+  left: 35px;
+  color: #ffffff;
+}
+
+.auth-image-overlay > span {
+  display: block;
+  margin-bottom: 14px;
+  color: #ffd4b2;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+.auth-image-overlay h2 {
+  max-width: 420px;
+  margin: 0 0 13px;
+  color: #ffffff;
+  font-family: "Raleway", sans-serif;
+  font-size: clamp(25px, 2.7vw, 36px);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.auth-image-overlay p {
+  max-width: 380px;
+  margin: 0;
+  color: #f1f0fb;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .auth-page > .auth-card {
+    flex-basis: 470px;
+  }
+
+  .auth-image-panel {
+    flex-basis: 370px;
+  }
+
+  .auth-image-overlay {
+    right: 25px;
+    left: 25px;
+  }
+}
+
+/* Mobile — prioritize the existing forms */
+@media (max-width: 700px) {
+  .auth-page {
+    padding: 24px 16px;
+  }
+
+  .auth-page > .auth-card {
+    flex: 0 1 520px;
+    max-width: 520px;
+    border-radius: 20px;
+  }
+
+  .auth-image-panel {
+    display: none;
+  }
+}

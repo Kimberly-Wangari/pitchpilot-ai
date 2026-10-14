@@ -1,3 +1,4 @@
+
 import {
   Navigate,
   Route,
@@ -11,14 +12,21 @@ import AgentDashboard from "./pages/AgentDashboard";
 import ScenarioLibrary from "./pages/scenarioLibrary";
 import ScenarioDetails from "./pages/ScenarioDetails";
 import TrainingSession from "./pages/TrainingSession";
+import OAuthCallbackPage from "./pages/OAuthCallbackPage";
+import ManagerDashboard from "./pages/ManagerDashboard";
+import ManagerRoute from "./components/ManagerRoute";
+
+
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import ManagerLogin from "./pages/ManagerLogin";
 
 import "./App.css";
 
 function App() {
   return (
     <Routes>
+      {/* Public routes */}
       <Route
         path="/"
         element={<LandingPage />}
@@ -34,6 +42,13 @@ function App() {
         element={<RegisterPage />}
       />
 
+      {/* OAuth callback - must remain public */}
+      <Route
+        path="/auth/callback"
+        element={<OAuthCallbackPage />}
+      />
+
+      {/* Dashboard */}
       <Route
         path="/dashboard"
         element={
@@ -43,6 +58,7 @@ function App() {
         }
       />
 
+      {/* Scenario library */}
       <Route
         path="/scenarios"
         element={
@@ -52,6 +68,7 @@ function App() {
         }
       />
 
+      {/* Scenario details */}
       <Route
         path="/scenarios/:id"
         element={
@@ -60,7 +77,9 @@ function App() {
           </ProtectedRoute>
         }
       />
+      
 
+      {/* Training session */}
       <Route
         path="/training/:sessionId"
         element={
@@ -69,12 +88,27 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/manager/dashboard"
+  element={
+    <ManagerRoute>
+      <ManagerDashboard />
+    </ManagerRoute>
+  }
+/>
 
+      {/* Fallback route */}
       <Route
         path="*"
         element={<Navigate to="/" replace />}
       />
+     
+      <Route
+  path="/manager/login"
+  element={<ManagerLogin />}
+/>
     </Routes>
+    
   );
 }
 

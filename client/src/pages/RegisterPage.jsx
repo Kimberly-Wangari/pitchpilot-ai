@@ -1,7 +1,10 @@
+
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams, } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
+import PasswordInput from "../components/PasswordInput";
+import SocialLogin from "../components/SocialLogin";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -34,7 +37,6 @@ function RegisterPage() {
 
     try {
       await register(formData);
-
       navigate("/dashboard");
     } catch (error) {
       setError(
@@ -78,6 +80,7 @@ function RegisterPage() {
                 type="text"
                 value={formData.firstName}
                 onChange={handleChange}
+                autoComplete="given-name"
                 required
               />
             </div>
@@ -93,6 +96,7 @@ function RegisterPage() {
                 type="text"
                 value={formData.lastName}
                 onChange={handleChange}
+                autoComplete="family-name"
                 required
               />
             </div>
@@ -109,6 +113,7 @@ function RegisterPage() {
               type="email"
               value={formData.email}
               onChange={handleChange}
+              autoComplete="email"
               required
             />
           </div>
@@ -118,13 +123,13 @@ function RegisterPage() {
               Password
             </label>
 
-            <input
-              id="password"
+            <PasswordInput
               name="password"
-              type="password"
               value={formData.password}
               onChange={handleChange}
-              minLength="8"
+              placeholder="Create a password"
+              autoComplete="new-password"
+              minLength={8}
               required
             />
 
@@ -144,14 +149,26 @@ function RegisterPage() {
           </button>
         </form>
 
-        <p className="auth-footer">
+        <SocialLogin />
+
+                <p className="auth-footer">
           Already have an account?{" "}
           <Link to="/login">
             Sign in
           </Link>
         </p>
       </div>
+
+      {/* Registration landscape image */}
+      <div className="auth-image-panel auth-register-image">
+        <div className="auth-image-overlay">
+          <span>YOUR JOURNEY STARTS HERE</span>
+          <h2>Confidence begins with practice.</h2>
+          <p>Take the first step towards stronger sales conversations.</p>
+        </div>
+      </div>
     </div>
+     
   );
 }
 
