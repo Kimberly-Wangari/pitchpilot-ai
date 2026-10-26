@@ -1,20 +1,24 @@
+
 const express = require("express");
 
 const {
   createTrainingSession,
   getTrainingSessionById,
+  endAndEvaluateTrainingSession,
+  getTrainingSessionEvaluation,
 } = require("../controllers/trainingSessionController");
 
 const {
   authenticateToken,
 } = require("../middleware/authMiddleware");
 
-const router = express.Router();
-
 const {
   getConversationMessages,
   sendConversationMessage,
 } = require("../controllers/conversationController");
+
+const router = express.Router();
+
 // Create a training session
 router.post(
   "/",
@@ -42,4 +46,19 @@ router.post(
   authenticateToken,
   sendConversationMessage
 );
+
+// End a session and generate feedback
+router.post(
+  "/:id/end-and-evaluate",
+  authenticateToken,
+  endAndEvaluateTrainingSession
+);
+
+// Retrieve saved performance feedback
+router.get(
+  "/:id/evaluation",
+  authenticateToken,
+  getTrainingSessionEvaluation
+);
+
 module.exports = router;

@@ -30,4 +30,35 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Handle suspended accounts globally
+api.interceptors.response.use(
+  (response) => response,
+
+  (error) => {
+    const status = error.response?.status;
+    const code = error.response?.data?.code;
+
+    if (
+      status === 403 &&
+      code === "ACCOUNT_SUSPENDED"
+    ) {
+      // Remove the JWT immediately.
+      localStorage.removeItem("pitchpilot_token");
+
+      // Preserve the suspension message for login.
+      sessionStorage.setItem(
+        "pitchpilot_auth_notice",
+        "Your account has been suspended. Please contact the administrator."
+      );
+
+      // Avoid repeated redirects.
+      if (window.location.pathname !== "/login") {
+        window.location.replace("/login");
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default api;

@@ -16,7 +16,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Restore an existing authenticated session
+  // RESTORE EXISTING SESSION
+
   useEffect(() => {
     const loadUser = async () => {
       const token = localStorage.getItem(TOKEN_KEY);
@@ -28,7 +29,6 @@ export function AuthProvider({ children }) {
 
       try {
         const response = await api.get("/auth/me");
-
         setUser(response.data.user);
       } catch (error) {
         console.error(
@@ -46,7 +46,8 @@ export function AuthProvider({ children }) {
     loadUser();
   }, []);
 
-  // Shared session handler for all authentication methods
+  // SAVE AUTHENTICATED SESSION
+
   const saveSession = ({ token, user }) => {
     if (!token || !user) {
       throw new Error("Invalid authentication response.");
@@ -56,11 +57,37 @@ export function AuthProvider({ children }) {
     setUser(user);
   };
 
-  // Register using email and password
+  // REGISTER
+
   const register = async (formData) => {
     const response = await api.post(
       "/auth/register",
       formData
+    );
+
+    return response.data;
+  };
+
+  // LOGIN
+
+  const login = async (email, password) => {
+    const response = await api.post("/auth/login", {
+      email,
+      password,
+    });
+
+    return response.data;
+  };
+
+  // VERIFY REGISTRATION OR LOGIN OTP
+
+  const verifyOtp = async (challengeId, code) => {
+    const response = await api.post(
+      "/auth/verify-otp",
+      {
+        challengeId,
+        code,
+      }
     );
 
     saveSession(response.data);
@@ -68,41 +95,162 @@ export function AuthProvider({ children }) {
     return response.data;
   };
 
-  // Sign in using email and password
-  const login = async (email, password) => {
-    const response = await api.post("/auth/login", {
-      email,
-      password,
-    });
+  // RESEND OTP
 
-    saveSession(response.data);
+  const resendOtp = async (challengeId) => {
+    const response = await api.post(
+      "/auth/resend-otp",
+      {
+        challengeId,
+      }
+    );
 
     return response.data;
   };
 
-  // Complete Google, Microsoft or Apple authentication
+  // FORGOT PASSWORD — REQUEST OTP
+
+  const requestPasswordReset = async (email) => {
+    const response = await api.post(
+      "/auth/forgot-password",
+      { email }
+    );
+
+    return response.data;
+  };
+
+  // FORGOT PASSWORD — VERIFY OTP
+
+  const verifyPasswordReset = async (
+    challengeId,
+    code
+  ) => {
+    const response = await api.post(
+      "/auth/verify-reset",
+      {
+        challengeId,
+        code,
+      }
+    );
+
+    return response.data;
+  };
+
+  // FORGOT PASSWORD — UPDATE PASSWORD
+
+  const completePasswordReset = async (
+    challengeId,
+    resetToken,
+    newPassword,
+    confirmPassword
+  ) => {
+    const response = await api.post(
+      "/auth/reset-password",
+      {
+        challengeId,
+        resetToken,
+        newPassword,
+        confirmPassword,
+      }
+    );
+
+    return response.data;
+  };
+
+  // COMPLETE GOOGLE AUTHENTICATION
+
   const completeOAuthLogin = (authData) => {
     saveSession(authData);
   };
 
-  // Start social authentication
-  
-const startSocialLogin = (provider) => {
-  if (provider !== "google") {
-    return;
-  }
+  // START GOOGLE SIGN-IN
 
-  window.location.assign(
-    `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/oauth/google/start`
-  );
-};
+  const startSocialLogin = (provider) => {
+    if (provider !== "google") {
+      return;
+    }
 
+    window.location.assign(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5000/api"
+      }/oauth/google/start`
+    );
+  };
 
-  // Log out
+  // REFRESH CURRENT USER PROFILE
+
+  const refreshUser = async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+
+    if (!token) {
+      throw new Error("You must be signed in.");
+    }
+
+    const response = await api.get("/auth/me");
+
+    setUser(response.data.user);
+
+    return response.data.user;
+  };
+
+  // UPDATE FIRST AND LAST NAME
+
+  const updateProfile = async ({
+    firstName,
+    lastName,
+  }) => {
+    const nextFirstName = firstName?.trim();
+    const nextLastName = lastName?.trim();
+
+    if (!nextFirstName || !nextLastName) {
+      throw new Error(
+        "First name and last name are required."
+      );
+    }
+
+    if (
+      nextFirstName.length > 100 ||
+      nextLastName.length > 100
+    ) {
+      throw new Error(
+        "Names must be 100 characters or fewer."
+      );
+    }
+
+    const response = await api.patch(
+      "/auth/profile",
+      {
+        firstName: nextFirstName,
+        lastName: nextLastName,
+      }
+    );
+
+    const updatedUser = response.data.user;
+
+    if (!updatedUser) {
+      throw new Error(
+        "The server did not return the updated profile."
+      );
+    }
+
+    // Synchronize the name across the application.
+    setUser((previousUser) => ({
+      ...previousUser,
+      ...updatedUser,
+    }));
+
+    return response.data;
+  };
+
+  // LOGOUT
+
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
     setUser(null);
   };
+
+  // PROVIDE AUTHENTICATION FUNCTIONS
 
   return (
     <AuthContext.Provider
@@ -111,9 +259,16 @@ const startSocialLogin = (provider) => {
         loading,
         register,
         login,
+        verifyOtp,
+        resendOtp,
+        requestPasswordReset,
+        verifyPasswordReset,
+        completePasswordReset,
         logout,
         completeOAuthLogin,
         startSocialLogin,
+        refreshUser,
+        updateProfile,
         isAuthenticated: Boolean(user),
       }}
     >
@@ -133,4 +288,5 @@ export function useAuth() {
 
   return context;
 }
+
 export default AuthContext;

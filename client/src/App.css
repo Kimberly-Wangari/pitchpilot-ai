@@ -166,6 +166,33 @@ a {
   color: #991b1b;
 }
 
+.otp-input {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 10px;
+}
+
+.otp-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.link-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.link-button:disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
 /* Dashboard */
 
 .dashboard {
@@ -724,11 +751,7 @@ body {
   min-height: 100vh;
 }
 
-/* =========================================
-   PITCHPILOT AI — AUTH LANDSCAPE IMAGES
-   ========================================= */
 
-/* Keep the existing authentication page styling */
 .auth-page {
   display: flex;
   align-items: center;

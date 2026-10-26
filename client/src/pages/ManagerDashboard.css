@@ -651,3 +651,22 @@
     transition: none !important;
   }
 }
+
+/* Clickable manager profile avatar */
+
+a.pm-profile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.pm-profile:hover {
+  filter: brightness(1.08);
+}
+
+a.pm-profile:focus-visible {
+  outline: 3px solid #8365e9;
+  outline-offset: 3px;
+}

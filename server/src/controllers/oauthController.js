@@ -18,7 +18,7 @@ const cookieOptions = {
   signed: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
-  path: "/api/auth/oauth/exchange",
+  path: "/api/oauth/exchange",
   maxAge: 2 * 60 * 1000,
 };
 
@@ -173,8 +173,8 @@ async function googleCallback(req, res) {
 
       const created = await client.query(
         `INSERT INTO users
-         (first_name, last_name, email, password_hash, role)
-         VALUES ($1, $2, $3, NULL, 'agent')
+         (first_name, last_name, email, password_hash, role, email_verified)
+         VALUES ($1, $2, $3, NULL, 'agent', TRUE)
          RETURNING *`,
         [firstName, lastName, email]
       );

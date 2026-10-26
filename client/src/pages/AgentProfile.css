@@ -1,0 +1,411 @@
+
+/* PitchPilot AI — Agent Profile */
+/* Matches approved dashboard colour palette */
+
+.pd-agent-profile {
+  --pap-navy: #19264b;
+  --pap-text: #2d324f;
+  --pap-muted: #68728f;
+  --pap-violet: #8365e9;
+  --pap-peach: #f9b17b;
+  --pap-border: #e6e8f1;
+}
+
+.pd-agent-profile .pap-hero {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 36px;
+  border: 1px solid #dcddeb;
+  border-radius: 22px;
+  background: linear-gradient(110deg, #f0f0f5, #e9eaf3);
+  box-shadow: 0 8px 25px rgba(45, 50, 79, 0.05);
+}
+
+.pap-hero-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 105px;
+  height: 105px;
+  border: 4px solid #fff;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #a58aff, #6c55d5);
+  color: #fff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 35px;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(131, 101, 233, 0.18);
+}
+
+.pap-kicker {
+  color: #7558dc;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.pap-hero-info {
+  min-width: 0;
+}
+
+.pap-hero-info h2 {
+  margin: 10px 0 6px;
+  color: var(--pap-navy);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(24px, 3vw, 34px);
+}
+
+.pap-hero-info p {
+  overflow-wrap: anywhere;
+  margin: 0 0 14px;
+  color: var(--pap-muted);
+  font-size: 13px;
+}
+
+.pap-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid #e5ddff;
+  border-radius: 100px;
+  background: #f5f1ff;
+  color: #6d54c9;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.pap-section {
+  margin-top: 40px;
+}
+
+.pap-details-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 25px;
+  border: 1px solid var(--pap-border);
+  border-radius: 19px;
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(45, 50, 79, 0.04);
+}
+
+.pap-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  min-width: 0;
+  padding: 21px;
+  border: 1px solid #e6e8f1;
+  border-radius: 13px;
+  background: #f7f8fc;
+}
+
+.pap-detail > svg {
+  flex-shrink: 0;
+  color: var(--pap-violet);
+}
+
+.pap-detail div {
+  min-width: 0;
+}
+
+.pap-detail span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--pap-muted);
+  font-size: 11px;
+}
+
+.pap-detail strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--pap-text);
+  font-size: 14px;
+}
+
+.pap-training-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.pap-training-card {
+  padding: 27px;
+  border: 1px solid #35415f;
+  border-radius: 19px;
+  background: linear-gradient(145deg, #202b4b, #141d37);
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(20, 29, 55, 0.1);
+}
+
+.pap-training-icon {
+  display: grid;
+  place-items: center;
+  width: 45px;
+  height: 45px;
+  margin-bottom: 19px;
+  border-radius: 12px;
+  background: #eee9ff;
+  color: #765bda;
+}
+
+.pap-training-card > span {
+  display: block;
+  color: #c8d0e7;
+  font-size: 12px;
+}
+
+.pap-training-card > strong {
+  display: block;
+  margin: 12px 0;
+  color: #fff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 34px;
+}
+
+.pap-training-card > p {
+  margin: 0;
+  color: #c2cbe2;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.pap-next-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 40px;
+  padding: 30px;
+  border: 1px solid #dcddeb;
+  border-radius: 19px;
+  background: linear-gradient(110deg, #f0f0f5, #e9eaf3);
+}
+
+.pap-next-step h3 {
+  margin: 10px 0;
+  color: var(--pap-navy);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 22px;
+}
+
+.pap-next-step p {
+  margin: 0;
+  color: #5d6887;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.pd-agent-profile .pap-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: 11px;
+  background: var(--pap-peach);
+  color: var(--pap-text) !important;
+  font-size: 12px;
+  font-weight: 800;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.pd-agent-profile .pap-cta:hover {
+  background: #f5a36c;
+  transform: translateY(-2px);
+}
+
+.pd-agent-profile .pd-sidebar-profile {
+  border-radius: 11px;
+}
+
+.pd-agent-profile .pd-sidebar-profile:hover {
+  background: #f3f0ff;
+}
+
+@media (max-width: 760px) {
+  .pd-agent-profile .pap-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 25px;
+  }
+
+  .pap-hero-avatar {
+    width: 85px;
+    height: 85px;
+    font-size: 29px;
+  }
+
+  .pap-details-card,
+  .pap-training-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pap-details-card {
+    padding: 15px;
+  }
+
+  .pap-next-step {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+  }
+
+  .pd-agent-profile .pap-cta {
+    width: 100%;
+  }
+}
+.pd-agent-profile .pd-page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.pd-agent-profile .pap-heading-signout,
+.pd-agent-profile .pap-edit-button,
+.pd-agent-profile .pap-edit-cancel,
+.pd-agent-profile .pap-edit-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.pd-agent-profile .pap-heading-signout {
+  flex-shrink: 0;
+  border: 1px solid #f0c9cf;
+  background: #fff4f5;
+  color: #b34250;
+}
+.pd-agent-profile .pap-heading-signout:hover:not(:disabled) {
+  background: #ffe9ec;
+}
+
+.pd-agent-profile .pap-section .pd-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.pd-agent-profile .pap-edit-button {
+  flex-shrink: 0;
+  border: 1px solid #d5ccf8;
+  background: #f2efff;
+  color: #6245b7;
+}
+.pd-agent-profile .pap-edit-button:hover:not(:disabled) {
+  background: #e9e2ff;
+}
+
+.pd-agent-profile .pap-edit-form {
+  margin-top: 18px;
+  padding: 24px;
+  border: 1px solid #e1e5ef;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(25, 38, 75, 0.035);
+}
+.pd-agent-profile .pap-edit-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.pd-agent-profile .pap-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: #35415e;
+  font-size: 12px;
+  font-weight: 700;
+}
+.pd-agent-profile .pap-edit-field input {
+  display: block;
+  width: 100%;
+  min-height: 45px;
+  padding: 11px 13px;
+  border: 1px solid #dce1eb;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #19264b;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+.pd-agent-profile .pap-edit-field input:focus {
+  border-color: #8365e9;
+  box-shadow: 0 0 0 3px rgba(131, 101, 233, 0.12);
+}
+.pd-agent-profile .pap-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.pd-agent-profile .pap-edit-cancel {
+  border: 1px solid #dce1eb;
+  background: #f7f8fc;
+  color: #35415e;
+}
+.pd-agent-profile .pap-edit-cancel:hover:not(:disabled) {
+  background: #eef0f6;
+}
+.pd-agent-profile .pap-edit-save {
+  border: 1px solid #19264b;
+  background: #19264b;
+  color: #fff;
+}
+.pd-agent-profile .pap-edit-save:hover:not(:disabled) {
+  background: #30416f;
+}
+.pd-agent-profile .pap-edit-cancel:disabled,
+.pd-agent-profile .pap-edit-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.pd-agent-profile .pap-feedback-success,
+.pd-agent-profile .pap-feedback-error {
+  margin: 16px 0;
+  padding: 13px 15px;
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.pd-agent-profile .pap-feedback-success {
+  border: 1px solid #bcebd4;
+  background: #e2f9ee;
+  color: #11875e;
+}
+.pd-agent-profile .pap-feedback-error {
+  border: 1px solid #f2caca;
+  background: #fff1f1;
+  color: #a33c51;
+}
+@media (max-width: 620px) {
+  .pd-agent-profile .pap-edit-fields {
+    grid-template-columns: 1fr;
+  }
+  .pd-agent-profile .pap-edit-form {
+    padding: 18px;
+  }
+  .pd-agent-profile .pap-heading-signout {
+    width: 100%;
+  }
+}

@@ -1,5 +1,7 @@
 
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import {
   ArrowDownToLine,
   ArrowRight,
@@ -51,8 +53,23 @@ function exportCsv(agents) {
   URL.revokeObjectURL(url);
 }
 
+
 export default function ManagerDashboard() {
+  const { user } = useAuth();
+
+  const fullName =
+    [user?.firstName, user?.lastName]
+      .filter(Boolean)
+      .join(" ") || "Sales Manager";
+
+  const initials =
+    [user?.firstName, user?.lastName]
+      .filter(Boolean)
+      .map((name) => name.charAt(0).toUpperCase())
+      .join("") || "SM";
+
   const [overview, setOverview] = useState(null);
+
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -158,7 +175,16 @@ export default function ManagerDashboard() {
           >
             <Bell size={18} />
           </button>
-          <span className="pm-profile">M</span>
+          
+<Link
+  to="/manager/profile"
+  className="pm-profile"
+  title="View my profile"
+  aria-label={`View profile for ${fullName}`}
+>
+  {initials}
+</Link>
+
         </div>
       </header>
 

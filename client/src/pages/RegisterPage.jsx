@@ -1,14 +1,15 @@
 
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams, } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import PasswordInput from "../components/PasswordInput";
 import SocialLogin from "../components/SocialLogin";
+import OtpVerificationForm from "../components/OtpVerificationForm";
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, verifyOtp, resendOtp } = useAuth();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -19,6 +20,7 @@ function RegisterPage() {
 
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [challenge, setChallenge] = useState(null);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -36,13 +38,40 @@ function RegisterPage() {
     setSubmitting(true);
 
     try {
-      await register(formData);
-      navigate("/dashboard");
+      setChallenge(await register(formData));
     } catch (error) {
       setError(
         error.response?.data?.message ||
           "Unable to create your account."
       );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleVerify = async (code) => {
+    setError("");
+    setSubmitting(true);
+    try {
+      await verifyOtp(challenge.challengeId, code);
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      setError(error.response?.data?.message || "Unable to verify the code.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setError("");
+    setSubmitting(true);
+    try {
+      const next = await resendOtp(challenge.challengeId);
+      setChallenge(next);
+      return next;
+    } catch (error) {
+      setError(error.response?.data?.message || "Unable to resend the code.");
+      return null;
     } finally {
       setSubmitting(false);
     }
@@ -55,6 +84,17 @@ function RegisterPage() {
           PitchPilot AI
         </Link>
 
+        {challenge ? (
+          <OtpVerificationForm
+            challenge={challenge}
+            error={error}
+            submitting={submitting}
+            onVerify={handleVerify}
+            onResend={handleResend}
+            onCancel={() => { setChallenge(null); setError(""); }}
+          />
+        ) : (
+          <>
         <h1>Create your account</h1>
 
         <p className="auth-subtitle">
@@ -157,6 +197,8 @@ function RegisterPage() {
             Sign in
           </Link>
         </p>
+          </>
+        )}
       </div>
 
       {/* Registration landscape image */}

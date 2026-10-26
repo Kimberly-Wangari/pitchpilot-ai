@@ -1532,10 +1532,6 @@
 
 }
 
-/* =====================================================
-   APPROVED LANDING PAGE UPDATES — ACTUAL JSX SELECTORS
-   ===================================================== */
-
 /* Picture 1: softly shaded off-white hero */
 .lp-page .lp-hero {
   background: linear-gradient(115deg, #f0f0f5 0%, #e9eaf3 65%, #e5e6f1 100%);

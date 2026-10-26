@@ -1,32 +1,57 @@
 
-import {
-  Navigate,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
+// ==========================================
+// PUBLIC PAGES
+// ==========================================
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import OAuthCallbackPage from "./pages/OAuthCallbackPage";
+
+// ==========================================
+// AGENT PAGES
+// ==========================================
 import AgentDashboard from "./pages/AgentDashboard";
+import AgentProfile from "./pages/AgentProfile";
 import ScenarioLibrary from "./pages/scenarioLibrary";
 import ScenarioDetails from "./pages/ScenarioDetails";
 import TrainingSession from "./pages/TrainingSession";
-import OAuthCallbackPage from "./pages/OAuthCallbackPage";
+import FeedbackAnalysisPage from "./pages/FeedbackAnalysisPage";
+
+// ==========================================
+// MANAGER PAGES
+// ==========================================
 import ManagerDashboard from "./pages/ManagerDashboard";
-import ManagerRoute from "./components/ManagerRoute";
-
-
-
-import ProtectedRoute from "./components/ProtectedRoute";
+import ManagerProfile from "./pages/ManagerProfile";
 import ManagerLogin from "./pages/ManagerLogin";
+import ManagerActivation from "./pages/ManagerActivation";
 
+// ==========================================
+// ADMIN PAGES
+// ==========================================
+import AdminDashboard from "./pages/AdminDashboard";
+
+// ==========================================
+// ROUTE PROTECTION
+// ==========================================
+import ProtectedRoute from "./components/ProtectedRoute";
+import ManagerRoute from "./components/ManagerRoute";
+import AdminRoute from "./components/AdminRoute";
+
+// ==========================================
+// STYLES
+// ==========================================
 import "./App.css";
 
 function App() {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* =====================================
+          PUBLIC ROUTES
+      ===================================== */}
+
       <Route
         path="/"
         element={<LandingPage />}
@@ -42,13 +67,31 @@ function App() {
         element={<RegisterPage />}
       />
 
-      {/* OAuth callback - must remain public */}
+      <Route
+        path="/forgot-password"
+        element={<ForgotPasswordPage />}
+      />
+
+      {/* Google OAuth callback */}
       <Route
         path="/auth/callback"
         element={<OAuthCallbackPage />}
       />
 
-      {/* Dashboard */}
+      {/* =====================================
+          MANAGER INVITATION ACTIVATION
+          Public route: no login required
+      ===================================== */}
+
+      <Route
+        path="/manager/activate"
+        element={<ManagerActivation />}
+      />
+
+      {/* =====================================
+          AGENT ROUTES
+      ===================================== */}
+
       <Route
         path="/dashboard"
         element={
@@ -58,7 +101,15 @@ function App() {
         }
       />
 
-      {/* Scenario library */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <AgentProfile />
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path="/scenarios"
         element={
@@ -68,7 +119,6 @@ function App() {
         }
       />
 
-      {/* Scenario details */}
       <Route
         path="/scenarios/:id"
         element={
@@ -77,9 +127,7 @@ function App() {
           </ProtectedRoute>
         }
       />
-      
 
-      {/* Training session */}
       <Route
         path="/training/:sessionId"
         element={
@@ -88,27 +136,61 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route
-  path="/manager/dashboard"
-  element={
-    <ManagerRoute>
-      <ManagerDashboard />
-    </ManagerRoute>
-  }
-/>
 
-      {/* Fallback route */}
+      <Route
+        path="/session-feedback"
+        element={<FeedbackAnalysisPage />}
+      />
+
+      {/* =====================================
+          MANAGER ROUTES
+      ===================================== */}
+
+      <Route
+        path="/manager/login"
+        element={<ManagerLogin />}
+      />
+
+      <Route
+        path="/manager/dashboard"
+        element={
+          <ManagerRoute>
+            <ManagerDashboard />
+          </ManagerRoute>
+        }
+      />
+
+      <Route
+        path="/manager/profile"
+        element={
+          <ManagerRoute>
+            <ManagerProfile />
+          </ManagerRoute>
+        }
+      />
+
+      {/* =====================================
+          ADMIN ROUTES
+      ===================================== */}
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+
+      {/* =====================================
+          FALLBACK ROUTE
+      ===================================== */}
+
       <Route
         path="*"
         element={<Navigate to="/" replace />}
       />
-     
-      <Route
-  path="/manager/login"
-  element={<ManagerLogin />}
-/>
     </Routes>
-    
   );
 }
 

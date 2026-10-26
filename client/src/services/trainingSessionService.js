@@ -15,3 +15,19 @@ export const getTrainingSessionById = async (sessionId) => {
 
   return response.data;
 };
+
+export const endAndEvaluateTrainingSession = async (sessionId) => {
+  const response = await api.post(
+    `/training-sessions/${sessionId}/end-and-evaluate`
+  );
+
+  return response.data;
+};
+
+export const getTrainingSessionEvaluation = async (sessionId) => {
+  const response = await api.get(
+    `/training-sessions/${sessionId}/evaluation`
+  );
+
+  return response.data;
+};

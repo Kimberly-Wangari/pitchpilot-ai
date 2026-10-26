@@ -79,6 +79,7 @@ const trainingScenarios = [
   },
 ];
 
+
 const sidebarLinks = [
   {
     label: "Overview",
@@ -91,7 +92,13 @@ const sidebarLinks = [
     icon: Compass,
     to: "/scenarios",
   },
+  {
+    label: "My Profile",
+    icon: UserRound,
+    to: "/profile",
+  },
 ];
+
 
 function DashboardLogo() {
   return (
@@ -245,16 +252,22 @@ function AgentDashboard() {
         </div>
 
         <div className="pd-sidebar-bottom">
-          <div className="pd-sidebar-profile">
-            <div className="pd-profile-avatar">
-              {initials}
-            </div>
+          
+<Link
+  to="/profile"
+  className="pd-sidebar-profile"
+  aria-label="View my profile"
+>
+  <div className="pd-profile-avatar">
+    {initials}
+  </div>
 
-            <div className="pd-profile-details">
-              <strong>{fullName}</strong>
-              <span>Sales Agent</span>
-            </div>
-          </div>
+  <div className="pd-profile-details">
+    <strong>{fullName}</strong>
+    <span>Sales Agent</span>
+  </div>
+</Link>
+
 
           <button
             type="button"
@@ -294,13 +307,16 @@ function AgentDashboard() {
               Ready to train
             </span>
 
-            <div
-              className="pd-topbar-avatar"
-              title={fullName}
-              aria-label={`Signed in as ${fullName}`}
-            >
-              {initials}
-            </div>
+            
+<Link
+  to="/profile"
+  className="pd-topbar-avatar"
+  title="View my profile"
+  aria-label={`View profile for ${fullName}`}
+>
+  {initials}
+</Link>
+
           </div>
         </header>
 

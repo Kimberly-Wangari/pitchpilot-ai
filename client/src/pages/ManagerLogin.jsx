@@ -9,17 +9,19 @@ import {
 import { useAuth } from "../context/AuthContext";
 import PasswordInput from "../components/PasswordInput";
 import SocialLogin from "../components/SocialLogin";
+import OtpVerificationForm from "../components/OtpVerificationForm";
 
 import "./ManagerLogin.css";
 
 function ManagerLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, verifyOtp, resendOtp } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [challenge, setChallenge] = useState(null);
 
   const [searchParams] = useSearchParams();
   const oauthError = searchParams.get("oauth_error");
@@ -49,9 +51,19 @@ function ManagerLogin() {
     setSubmitting(true);
 
     try {
-      const result = await login(email.trim(), password);
+      setChallenge(await login(email.trim(), password));
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Unable to sign in. Please check your credentials."
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-      switch (result.user.role) {
+  const finishLogin = (result) => {
+    switch (result.user.role) {
         case "manager":
           navigate("/manager/dashboard", {
             replace: true,
@@ -68,12 +80,31 @@ function ManagerLogin() {
           navigate("/", {
             replace: true,
           });
-      }
+    }
+  };
+
+  const handleVerify = async (code) => {
+    setError("");
+    setSubmitting(true);
+    try {
+      finishLogin(await verifyOtp(challenge.challengeId, code));
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Unable to sign in. Please check your credentials."
-      );
+      setError(err.response?.data?.message || "Unable to verify the code.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setError("");
+    setSubmitting(true);
+    try {
+      const next = await resendOtp(challenge.challengeId);
+      setChallenge(next);
+      return next;
+    } catch (err) {
+      setError(err.response?.data?.message || "Unable to resend the code.");
+      return null;
     } finally {
       setSubmitting(false);
     }
@@ -87,6 +118,17 @@ function ManagerLogin() {
           PitchPilot AI
         </Link>
 
+        {challenge ? (
+          <OtpVerificationForm
+            challenge={challenge}
+            error={error}
+            submitting={submitting}
+            onVerify={handleVerify}
+            onResend={handleResend}
+            onCancel={() => { setChallenge(null); setError(""); }}
+          />
+        ) : (
+          <>
         <span className="manager-login-label">
           SALES MANAGEMENT PORTAL
         </span>
@@ -166,6 +208,8 @@ function ManagerLogin() {
         <p className="manager-login-note">
           Manager accounts are provided by your administrator.
         </p>
+          </>
+        )}
       </div>
 
       {/* RIGHT SIDE - GREEN HILLS LANDSCAPE */}
