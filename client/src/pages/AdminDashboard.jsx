@@ -633,6 +633,368 @@ function AdminManagerManagement({ onChanged }) {
   );
 }
 
+
+function AdminTeamManagement({ onChanged }) {
+  const [managers, setManagers] = useState([]);
+  const [agents, setAgents] = useState([]);
+
+  const [selectedManagers, setSelectedManagers] =
+    useState({});
+
+  const [loading, setLoading] = useState(true);
+  const [savingAgentId, setSavingAgentId] =
+    useState(null);
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const loadTeams = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await api.get("/admin/teams");
+
+      const loadedManagers = response.data.managers || [];
+      const loadedAgents = response.data.agents || [];
+
+      setManagers(loadedManagers);
+      setAgents(loadedAgents);
+
+      const initialSelections = {};
+
+      for (const agent of loadedAgents) {
+        initialSelections[agent.id] =
+          agent.managerId == null
+            ? ""
+            : String(agent.managerId);
+      }
+
+      setSelectedManagers(initialSelections);
+    } catch (err) {
+      console.error("Load teams error:", err);
+
+      setError(
+        err.response?.data?.message ||
+          "Unable to load team assignments."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTeams();
+  }, []);
+
+  const handleAssignmentChange = (agentId, value) => {
+    setSelectedManagers((previous) => ({
+      ...previous,
+      [agentId]: value,
+    }));
+
+    setSuccess("");
+  };
+
+  const handleSaveAssignment = async (agent) => {
+    if (savingAgentId !== null) return;
+
+    const selectedValue =
+      selectedManagers[agent.id] ?? "";
+
+    const managerId =
+      selectedValue === ""
+        ? null
+        : Number(selectedValue);
+
+    const currentManagerId =
+      agent.managerId == null
+        ? null
+        : Number(agent.managerId);
+
+    if (managerId === currentManagerId) {
+      return;
+    }
+
+    const action =
+      managerId === null
+        ? "unassign this Sales Agent"
+        : currentManagerId === null
+        ? "assign this Sales Agent"
+        : "reassign this Sales Agent";
+
+    const confirmed = window.confirm(
+      `Are you sure you want to ${action}?`
+    );
+
+    if (!confirmed) return;
+
+    setSavingAgentId(agent.id);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await api.patch(
+        `/admin/teams/agents/${agent.id}/manager`,
+        {
+          managerId,
+        }
+      );
+
+      setSuccess(
+        response.data.message ||
+          "Team assignment updated successfully."
+      );
+
+      await loadTeams();
+      onChanged?.();
+    } catch (err) {
+      console.error("Save assignment error:", err);
+
+      setError(
+        err.response?.data?.message ||
+          "Unable to update team assignment."
+      );
+    } finally {
+      setSavingAgentId(null);
+    }
+  };
+
+  const assignedCount = agents.filter(
+    (agent) => agent.managerId !== null
+  ).length;
+
+  return (
+    <section className="pa-team-panel">
+      <div className="pa-team-header">
+        <div>
+          <h3>Manager–Agent Assignments</h3>
+          <p>
+            Assign Sales Agents to Managers and manage
+            existing team relationships.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="pa-team-refresh"
+          onClick={loadTeams}
+          disabled={loading || savingAgentId !== null}
+        >
+          <RefreshCw size={16} />
+          Refresh
+        </button>
+      </div>
+
+      <div className="pa-team-stats">
+        <div>
+          <strong>{managers.length}</strong>
+          <span>Available Managers</span>
+        </div>
+
+        <div>
+          <strong>{agents.length}</strong>
+          <span>Sales Agents</span>
+        </div>
+
+        <div>
+          <strong>{assignedCount}</strong>
+          <span>Assigned Agents</span>
+        </div>
+
+        <div>
+          <strong>
+            {agents.length - assignedCount}
+          </strong>
+          <span>Unassigned Agents</span>
+        </div>
+      </div>
+
+      {error && (
+        <div className="pa-error" role="alert">
+          <ShieldAlert size={17} />
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div
+          className="pa-success-message"
+          role="status"
+        >
+          <CheckCircle2 size={17} />
+          {success}
+        </div>
+      )}
+
+      <div className="pa-team-table-scroll">
+        <table className="pa-team-table">
+          <thead>
+            <tr>
+              <th>Sales Agent</th>
+              <th>Account Status</th>
+              <th>Assigned Manager</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={4} className="pa-team-empty">
+                  Loading team assignments...
+                </td>
+              </tr>
+            ) : agents.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="pa-team-empty">
+                  No Sales Agents found.
+                </td>
+              </tr>
+            ) : (
+              agents.map((agent) => {
+                const name =
+                  [
+                    agent.firstName,
+                    agent.lastName,
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || "Unnamed Agent";
+
+                const selectedValue =
+                  selectedManagers[agent.id] ?? "";
+
+                const currentValue =
+                  agent.managerId == null
+                    ? ""
+                    : String(agent.managerId);
+
+                const changed =
+                  selectedValue !== currentValue;
+
+                const assigning =
+                  selectedValue !== "";
+
+                const eligible =
+                  agent.isActive &&
+                  agent.emailVerified;
+
+                const canSave =
+                  changed &&
+                  savingAgentId === null &&
+                  (!assigning || eligible);
+
+                return (
+                  <tr key={agent.id}>
+                    <td>
+                      <div className="pa-team-agent">
+                        <div className="pa-team-avatar">
+                          <UserRound size={17} />
+                        </div>
+
+                        <div>
+                          <strong>{name}</strong>
+                          <small>{agent.email}</small>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      <span
+                        className={
+                          eligible
+                            ? "pa-team-active"
+                            : "pa-team-inactive"
+                        }
+                      >
+                        {eligible
+                          ? "Eligible"
+                          : !agent.isActive
+                          ? "Suspended"
+                          : "Unverified"}
+                      </span>
+                    </td>
+
+                    <td>
+                      <select
+                        className="pa-team-select"
+                        value={selectedValue}
+                        onChange={(event) =>
+                          handleAssignmentChange(
+                            agent.id,
+                            event.target.value
+                          )
+                        }
+                        disabled={
+                          savingAgentId !== null
+                        }
+                        aria-label={
+                          `Assign a manager to ${name}`
+                        }
+                      >
+                        <option value="">
+                          Unassigned
+                        </option>
+
+                        {managers.map((manager) => (
+                          <option
+                            key={manager.id}
+                            value={manager.id}
+                          >
+                            {[
+                              manager.firstName,
+                              manager.lastName,
+                            ]
+                              .filter(Boolean)
+                              .join(" ") ||
+                              manager.email}
+                          </option>
+                        ))}
+
+                        {currentValue &&
+                          !managers.some(
+                            (manager) =>
+                              String(manager.id) ===
+                              currentValue
+                          ) && (
+                            <option value={currentValue}>
+                              Current Manager (unavailable)
+                            </option>
+                          )}
+                      </select>
+                    </td>
+
+                    <td>
+                      <button
+                        type="button"
+                        className="pa-team-save"
+                        onClick={() =>
+                          handleSaveAssignment(agent)
+                        }
+                        disabled={!canSave}
+                      >
+                        {savingAgentId === agent.id
+                          ? "Saving..."
+                          : "Save"}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="pa-team-note">
+        Only active, email-verified Managers can
+        receive Agents. Existing assignments can
+        be removed by selecting Unassigned.
+      </p>
+    </section>
+  );
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -945,6 +1307,25 @@ export default function AdminDashboard() {
           </div>
         </div>
         <AdminManagerManagement onChanged={loadDashboard} />
+        
+
+        {/* TEAM MANAGEMENT */}
+<div className="pa-section-heading">
+  <div>
+    <span className="pa-section-eyebrow">
+      TEAM MANAGEMENT
+    </span>
+
+    <h2>Sales Agent Assignments</h2>
+
+    <p>
+      Assign Sales Agents to Managers and manage
+      existing team relationships.
+    </p>
+  </div>
+</div>
+
+<AdminTeamManagement onChanged={loadDashboard} />
 
 {/* MANAGEMENT WORKSPACE */}
         <div className="pa-section-heading">

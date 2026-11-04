@@ -409,3 +409,131 @@
     width: 100%;
   }
 }
+
+/* =====================================
+   PITCHPILOT AI — TRAINING PROGRESS
+   ===================================== */
+
+/* Loading and empty states */
+.pap-progress-state {
+  padding: 18px 0;
+  color: var(--pap-muted, #64748b);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Training history and skills containers */
+.pap-history-panel,
+.pap-skill-panel {
+  margin-top: 20px;
+  padding: 24px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid var(--pap-border, #e2e8f0);
+}
+
+/* Panel headings */
+.pap-history-panel h3,
+.pap-skill-panel h3 {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--pap-navy, #19264b);
+}
+
+/* Skills list */
+.pap-skill-list {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+/* Individual skill chips */
+.pap-skill-chip {
+  color: #5947ae;
+  background: #f1edff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Saved training sessions list */
+.pap-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Each completed session */
+.pap-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 0;
+  border-top: 1px solid var(--pap-border, #e2e8f0);
+}
+
+.pap-history-item:first-child {
+  border-top: 0;
+}
+
+/* Session information */
+.pap-history-item > div:first-child {
+  min-width: 0;
+}
+
+.pap-history-item strong {
+  color: var(--pap-navy, #19264b);
+  font-size: 14px;
+}
+
+/* Completion date and evaluation model */
+.pap-history-item span {
+  display: block;
+  color: var(--pap-muted, #64748b);
+  margin-top: 7px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+/* Evaluation score and report link */
+.pap-history-outcome {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pap-history-outcome a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #634bd0;
+  font-weight: 700;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.pap-history-outcome a:hover {
+  text-decoration: underline;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 560px) {
+  .pap-history-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pap-history-outcome {
+    align-items: flex-start;
+  }
+
+  .pap-history-panel,
+  .pap-skill-panel {
+    padding: 18px;
+  }
+}

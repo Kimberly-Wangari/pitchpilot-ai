@@ -169,7 +169,7 @@ export default function ManagerProfile() {
   // SIGN OUT
   const handleLogout = async () => {
     await logout();
-    navigate("/manager/login", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   return (

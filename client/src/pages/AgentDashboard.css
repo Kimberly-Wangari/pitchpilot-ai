@@ -1714,3 +1714,229 @@
   color: #5d6887;
 }
 
+
+/* ==========================================
+   PITCHPILOT AI — TEAM MANAGEMENT
+   ========================================== */
+
+.pa-team-panel {
+  padding: 28px;
+  margin-bottom: 30px;
+  border: 1px solid #dce1f0;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #19264b;
+  box-shadow: 0 8px 24px rgba(25, 38, 75, 0.04);
+}
+
+.pa-team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.pa-team-header h3 {
+  margin: 0 0 8px;
+  color: #19264b;
+  font-size: 19px;
+}
+
+.pa-team-header p {
+  margin: 0;
+  color: #737b98;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.pa-team-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border: 1px solid #dce1f0;
+  border-radius: 10px;
+  background: #f7f8fc;
+  color: #19264b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pa-team-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.pa-team-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px;
+  border: 1px solid #dce1f0;
+  border-radius: 13px;
+  background: #f4f5fa;
+}
+
+.pa-team-stats strong {
+  color: #19264b;
+  font-size: 25px;
+}
+
+.pa-team-stats span {
+  color: #737b98;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pa-team-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pa-team-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.pa-team-table th {
+  padding: 16px;
+  border-bottom: 1px solid #dce1f0;
+  background: #f4f5fa;
+  color: #5364a3;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.pa-team-table td {
+  padding: 17px 16px;
+  border-bottom: 1px solid #eef0f6;
+  font-size: 12px;
+}
+
+.pa-team-agent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pa-team-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: #e9eaf3;
+  color: #5364a3;
+}
+
+.pa-team-agent strong,
+.pa-team-agent small {
+  display: block;
+}
+
+.pa-team-agent strong {
+  color: #19264b;
+  margin-bottom: 5px;
+}
+
+.pa-team-agent small {
+  color: #737b98;
+  overflow-wrap: anywhere;
+}
+
+.pa-team-select {
+  width: 100%;
+  min-width: 180px;
+  padding: 11px;
+  border: 1px solid #dce1f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #19264b;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pa-team-select:focus-visible {
+  outline: 2px solid #6d76a4;
+  outline-offset: 2px;
+}
+
+.pa-team-save {
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #f9b17b;
+  color: #19264b;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pa-team-save:disabled,
+.pa-team-refresh:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pa-team-save:hover:not(:disabled) {
+  background: #f4a36b;
+}
+
+.pa-team-active,
+.pa-team-inactive {
+  display: inline-block;
+  padding: 7px 11px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.pa-team-active {
+  background: #e6f6ec;
+  color: #25764b;
+}
+
+.pa-team-inactive {
+  background: #fff0e5;
+  color: #965d36;
+}
+
+.pa-team-empty {
+  padding: 35px !important;
+  color: #737b98;
+  text-align: center;
+}
+
+.pa-team-note {
+  margin: 18px 0 0;
+  color: #737b98;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+@media (max-width: 850px) {
+  .pa-team-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 550px) {
+  .pa-team-panel {
+    padding: 16px;
+  }
+
+  .pa-team-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .pa-team-stats > div {
+    padding: 13px;
+  }
+}

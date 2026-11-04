@@ -18,14 +18,25 @@ import {
 import api from "../services/api";
 import "./ManagerDashboard.css";
 
+
 function exportCsv(agents) {
   const rows = [
-    ["Agent", "Email", "Completed", "In Progress"],
-    ...agents.map((a) => [
-      a.name,
-      a.email,
-      a.completed,
-      a.inProgress,
+    [
+      "Agent",
+      "Email",
+      "Completed",
+      "In Progress",
+      "Recent Real Score",
+    ],
+
+    ...agents.map((agent) => [
+      agent.name,
+      agent.email,
+      agent.completed,
+      agent.inProgress,
+      agent.score == null
+        ? "Not evaluated"
+        : `${agent.score}%`,
     ]),
   ];
 
@@ -33,23 +44,32 @@ function exportCsv(agents) {
     .map((row) =>
       row
         .map((value) =>
-          `"${String(value ?? "").replaceAll('"', '""')}"`
+          `"${String(value ?? "").replaceAll(
+            '"',
+            '""'
+          )}"`
         )
         .join(",")
     )
     .join("\r\n");
 
-  const blob = new Blob(["\ufeff", csv], {
-    type: "text/csv;charset=utf-8",
-  });
+  const blob = new Blob(
+    ["\ufeff", csv],
+    {
+      type: "text/csv;charset=utf-8",
+    }
+  );
 
   const url = URL.createObjectURL(blob);
+
   const link = document.createElement("a");
   link.href = url;
   link.download = "pitchpilot-agents.csv";
+
   document.body.appendChild(link);
   link.click();
   link.remove();
+
   URL.revokeObjectURL(url);
 }
 
@@ -222,12 +242,19 @@ export default function ManagerDashboard() {
                     <TrendingUp size={19} />
                   </span>
                 </div>
-                <strong style={{ fontSize: 25 }}>
-                  Not yet evaluated
-                </strong>
-                <div className="pm-stat-caption">
-                  Available after LLM scoring is integrated
-                </div>
+                
+<strong style={{ fontSize: 25 }}>
+  {overview.averageScore == null
+    ? "No real scores yet"
+    : `${Number(overview.averageScore).toFixed(1)}%`}
+</strong>
+
+<div className="pm-stat-caption">
+  Based on {overview.evaluatedSimulations || 0}
+  {" "}real AI evaluations; mocks excluded
+</div>
+
+                
               </section>
 
               <section className="pm-stat-card pm-gaps-card">
@@ -359,11 +386,15 @@ export default function ManagerDashboard() {
                           {agent.completed}
                         </td>
 
-                        <td>
+                        
+                         <td>
                           <span className="pm-score-label">
-                            Not yet evaluated
-                          </span>
-                        </td>
+                              {agent.score == null
+                             ? "Not yet evaluated"
+                            : `${Number(agent.score).toFixed(1)}%`}
+                           </span>
+                          </td>
+
 
                         <td className="pm-action-cell">
                           <button
@@ -450,9 +481,10 @@ export default function ManagerDashboard() {
             {report && (
               <>
                 <p className="pm-report-note">
-                  Performance scoring is not yet available.
-                  Below is the agent's actual training history.
-                </p>
+                 Training history and saved evaluations.
+                 Mock evaluations are test data and are
+                 excluded from real performance averages.
+                     </p>
 
                 <h3>Recent training sessions</h3>
 
@@ -460,29 +492,118 @@ export default function ManagerDashboard() {
                   <p>No training sessions recorded yet.</p>
                 ) : (
                   <div className="pm-modal-skills">
-                    {report.sessions.map((session) => (
-                      <div
-                        key={session.id}
-                        style={{
-                          borderBottom:
-                            "1px solid #e5e8f0",
-                          paddingBottom: 12,
-                        }}
-                      >
-                        <div className="pm-skill-label">
-                          <strong>
-                            {session.scenario_title}
-                          </strong>
-                          <span>{session.status}</span>
-                        </div>
-                        <small>
-                          Started:{" "}
-                          {new Date(
-                            session.started_at
-                          ).toLocaleString()}
-                        </small>
-                      </div>
-                    ))}
+                    
+{report.sessions.map((session) => (
+  <div
+    key={session.id}
+    style={{
+      borderBottom: "1px solid #e5e8f0",
+      paddingBottom: 18,
+      marginBottom: 18,
+    }}
+  >
+    <div className="pm-skill-label">
+      <strong>{session.scenario_title}</strong>
+      <span>{session.status}</span>
+    </div>
+
+    <small>
+      Started:{" "}
+      {new Date(
+        session.started_at
+      ).toLocaleString()}
+    </small>
+
+    {session.overall_score !== null ? (
+      <div style={{ marginTop: 12 }}>
+        <strong>
+          Score:{" "}
+          {Number(
+            session.overall_score
+          ).toFixed(1)}%
+        </strong>
+
+        {session.model
+          ?.toLowerCase()
+          .includes("mock") && (
+          <p style={{ color: "#9c5e28" }}>
+            Mock evaluation — integration
+            testing only.
+          </p>
+        )}
+
+        {session.scores && (
+          <>
+            <h4>Competency Scores</h4>
+
+            <ul>
+              {Object.entries(
+                session.scores
+              ).map(([skill, score]) => (
+                <li key={skill}>
+                  {skill}:{" "}
+                  {score === null
+                    ? "Not assessed"
+                    : `${score}/5`}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        {Array.isArray(
+          session.strengths
+        ) &&
+          session.strengths.length > 0 && (
+            <>
+              <h4>Strengths</h4>
+              <ul>
+                {session.strengths.map(
+                  (strength, index) => (
+                    <li key={index}>
+                      {strength}
+                    </li>
+                  )
+                )}
+              </ul>
+            </>
+          )}
+
+        {Array.isArray(
+          session.improvements
+        ) &&
+          session.improvements.length >
+            0 && (
+            <>
+              <h4>Areas for Improvement</h4>
+
+              <ul>
+                {session.improvements.map(
+                  (improvement, index) => (
+                    <li key={index}>
+                      {improvement}
+                    </li>
+                  )
+                )}
+              </ul>
+            </>
+          )}
+
+        {session.feedback && (
+          <>
+            <h4>Personalized Feedback</h4>
+            <p>{session.feedback}</p>
+          </>
+        )}
+      </div>
+    ) : (
+      <p style={{ marginTop: 8 }}>
+        No evaluation recorded.
+      </p>
+    )}
+  </div>
+))}
+
                   </div>
                 )}
               </>

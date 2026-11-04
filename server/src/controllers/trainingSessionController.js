@@ -114,6 +114,7 @@ module.exports = {
 }; */
 
 const pool = require("../config/database");
+const aiProvider = require("../services/aiProvider");
 
 const SUPPORTED_SCENARIOS = {
   "Handling a Price Objection": [
@@ -345,6 +346,7 @@ function validateEvaluation(data, skillNames) {
 }
 
 // Complete and evaluate a training session
+
 const endAndEvaluateTrainingSession = async (req, res) => {
   const sessionId = positiveId(req.params.id);
 
@@ -354,27 +356,9 @@ const endAndEvaluateTrainingSession = async (req, res) => {
     });
   }
 
-  const evaluationUrl =
-    process.env.PITCHPILOT_EVALUATION_URL;
-
-  const apiKey =
-    process.env.PITCHPILOT_INFERENCE_API_KEY;
-
-  if (!evaluationUrl || !apiKey) {
+  if (!aiProvider.isReady("evaluate")) {
     return res.status(503).json({
-      message: "AI evaluation endpoint is not configured",
-    });
-  }
-
-  try {
-    const url = new URL(evaluationUrl);
-
-    if (!["http:", "https:"].includes(url.protocol)) {
-      throw new Error("Invalid protocol");
-    }
-  } catch {
-    return res.status(503).json({
-      message: "Invalid AI evaluation endpoint URL",
+      message: "AI evaluation provider is not configured.",
     });
   }
 
@@ -394,6 +378,7 @@ const endAndEvaluateTrainingSession = async (req, res) => {
          AND ts.user_id = $2`,
       [sessionId, req.user.id]
     );
+
 
     if (sessionResult.rows.length === 0) {
       return res.status(404).json({
@@ -459,76 +444,41 @@ const endAndEvaluateTrainingSession = async (req, res) => {
       content: String(message.content).slice(0, 4000),
     }));
 
-    // Call the inference evaluation API
-    let response;
+    
+    // Generate evaluation using AI provider
+    let evaluation;
 
     try {
-      response = await fetch(evaluationUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": apiKey,
-        },
-        body: JSON.stringify({
-          scenario: session.title,
-          persona: String(
-            session.customer_persona ||
-              "A prospective customer"
-          ).slice(0, 6000),
-          objective: String(
-            session.objective ||
-              "Practice sales communication"
-          ).slice(0, 2000),
-          messages,
-        }),
-        signal: AbortSignal.timeout(180000),
+      const data = await aiProvider.evaluate({
+        scenario: session.title,
+        persona: String(
+          session.customer_persona || "A prospective customer"
+        ).slice(0, 6000),
+        objective: String(
+          session.objective || "Practice sales communication"
+        ).slice(0, 2000),
+        messages,
+        skillNames,
       });
+
+      // Validate scores before saving them
+      evaluation = validateEvaluation(
+        data,
+        skillNames
+      );
+
     } catch (error) {
       console.error(
-        "AI evaluation connection failed:",
+        "AI evaluation failed:",
         error.message
       );
 
-      return res.status(
-        error.name === "TimeoutError" ? 504 : 502
-      ).json({
+      return res.status(502).json({
         message:
           "AI evaluation is currently unavailable. Your session is still active.",
       });
     }
 
-    if (!response.ok) {
-      console.error(
-        "AI evaluation HTTP status:",
-        response.status
-      );
-
-      return res.status(502).json({
-        message:
-          "AI evaluation failed. Your session is still active.",
-      });
-    }
-
-    let evaluation;
-
-    try {
-      const data = await response.json();
-
-      evaluation = validateEvaluation(
-        data,
-        skillNames
-      );
-    } catch (error) {
-      console.error(
-        "Invalid AI evaluation:",
-        error.message
-      );
-
-      return res.status(502).json({
-        message:
-          "AI returned invalid evaluation data. Your session is still active.",
-      });
-    }
 
     // Save feedback and complete the session atomically
     const client = await pool.connect();

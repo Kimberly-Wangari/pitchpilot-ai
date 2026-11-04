@@ -476,7 +476,9 @@ router.patch("/users/:id/promote", async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE users
-       SET role = 'manager', updated_at = CURRENT_TIMESTAMP
+      SET role = 'manager',
+    manager_id = NULL,
+    updated_at = CURRENT_TIMESTAMP
        WHERE id = $1
          AND role = 'agent'
          AND is_active = TRUE
@@ -510,5 +512,207 @@ router.patch("/users/:id/promote", async (req, res) => {
     return res.status(500).json({ message: "Unable to promote this agent." });
   }
 });
+
+
+// ==============================================
+// TEAM MANAGEMENT
+// All routes are already protected by:
+// router.use(authenticateToken, requireAdmin)
+// ==============================================
+
+// GET /api/admin/teams
+// Retrieve managers and agents for assignment.
+router.get("/teams", async (req, res) => {
+  try {
+    const managersResult = await pool.query(
+      `SELECT
+         id,
+         first_name,
+         last_name,
+         email
+       FROM users
+       WHERE role = 'manager'
+         AND is_active = TRUE
+         AND email_verified = TRUE
+       ORDER BY first_name, last_name, id`
+    );
+
+    const agentsResult = await pool.query(
+      `SELECT
+         a.id,
+         a.first_name,
+         a.last_name,
+         a.email,
+         a.is_active,
+         a.email_verified,
+         a.manager_id,
+         m.first_name AS manager_first_name,
+         m.last_name AS manager_last_name
+       FROM users a
+       LEFT JOIN users m
+         ON a.manager_id = m.id
+       WHERE a.role = 'agent'
+       ORDER BY a.first_name, a.last_name, a.id`
+    );
+
+    return res.status(200).json({
+      managers: managersResult.rows.map((manager) => ({
+        id: manager.id,
+        firstName: manager.first_name,
+        lastName: manager.last_name,
+        email: manager.email,
+      })),
+
+      agents: agentsResult.rows.map((agent) => ({
+        id: agent.id,
+        firstName: agent.first_name,
+        lastName: agent.last_name,
+        email: agent.email,
+        isActive: agent.is_active,
+        emailVerified: agent.email_verified,
+        managerId: agent.manager_id,
+        managerName: [
+          agent.manager_first_name,
+          agent.manager_last_name,
+        ].filter(Boolean).join(" ") || null,
+      })),
+    });
+  } catch (error) {
+    console.error("Load team management error:", error);
+
+    return res.status(500).json({
+      message: "Unable to load team assignments.",
+    });
+  }
+});
+
+// PATCH /api/admin/teams/agents/:agentId/manager
+// Assign, reassign or unassign a sales agent.
+router.patch(
+  "/teams/agents/:agentId/manager",
+  async (req, res) => {
+    const agentId = Number(req.params.agentId);
+    const { managerId } = req.body || {};
+
+    if (!Number.isSafeInteger(agentId) || agentId <= 0) {
+      return res.status(400).json({
+        message: "Invalid Sales Agent ID.",
+      });
+    }
+
+    // null means unassign.
+    const unassign = managerId === null;
+
+    if (
+      !unassign &&
+      (
+        typeof managerId !== "number" ||
+        !Number.isSafeInteger(managerId) ||
+        managerId <= 0
+      )
+    ) {
+      return res.status(400).json({
+        message:
+          "managerId must be a positive integer or null.",
+      });
+    }
+
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      // Lock the agent record during assignment.
+      const agentResult = await client.query(
+        `SELECT
+           id,
+           manager_id,
+           is_active,
+           email_verified
+         FROM users
+         WHERE id = $1 AND role = 'agent'
+         FOR UPDATE`,
+        [agentId]
+      );
+
+      if (agentResult.rowCount === 0) {
+        await client.query("ROLLBACK");
+
+        return res.status(404).json({
+          message: "Sales Agent not found.",
+        });
+      }
+
+      const agent = agentResult.rows[0];
+
+      // Require an eligible agent for new assignments.
+      if (
+        !unassign &&
+        (!agent.is_active || !agent.email_verified)
+      ) {
+        await client.query("ROLLBACK");
+
+        return res.status(409).json({
+          message:
+            "Only active, verified agents can be assigned.",
+        });
+      }
+
+      if (!unassign) {
+        const managerResult = await client.query(
+          `SELECT id
+           FROM users
+           WHERE id = $1
+             AND role = 'manager'
+             AND is_active = TRUE
+             AND email_verified = TRUE
+           FOR SHARE`,
+          [managerId]
+        );
+
+        if (managerResult.rowCount === 0) {
+          await client.query("ROLLBACK");
+
+          return res.status(422).json({
+            message:
+              "Select an active, verified Sales Manager.",
+          });
+        }
+      }
+
+      const updated = await client.query(
+        `UPDATE users
+         SET manager_id = $1,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $2
+           AND role = 'agent'
+         RETURNING id, manager_id`,
+        [unassign ? null : managerId, agentId]
+      );
+
+      await client.query("COMMIT");
+
+      return res.status(200).json({
+        message: unassign
+          ? "Sales Agent unassigned successfully."
+          : "Sales Agent assigned successfully.",
+        agent: {
+          id: updated.rows[0].id,
+          managerId: updated.rows[0].manager_id,
+        },
+      });
+    } catch (error) {
+      await client.query("ROLLBACK").catch(() => {});
+
+      console.error("Update team assignment error:", error);
+
+      return res.status(500).json({
+        message: "Unable to update team assignment.",
+      });
+    } finally {
+      client.release();
+    }
+  }
+);
 
 module.exports = router;

@@ -362,31 +362,40 @@
     width: 100%;
   }
 }
-pp-analysis__summary > div {
+
+/* NAVY BLUE SUMMARY CARDS */
+
+.pp-analysis__summary > div {
   background: #082654;
   color: #ffffff;
   border: 1px solid #123b70;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 26px 24px;
   min-height: 125px;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 12px;
-  box-shadow: 0 4px 12px rgba(8, 38, 84, 0.08);
+
+  box-shadow: 0 4px 12px rgba(8, 38, 84, 0.12);
 }
 
+/* Summary card headings */
 .pp-analysis__summary > div span {
   color: #d7e4f7;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
+/* Summary card values */
 .pp-analysis__summary > div strong {
   color: #ffffff;
   font-size: 17px;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
+
 .pp-analysis__fill {
   background: #082654;
 }
@@ -418,3 +427,24 @@ pp-analysis__summary > div {
     grid-template-columns: 1fr;
   }
 }
+
+/* Navy-blue session summary cards */
+.pp-analysis__summary-card {
+  background-color: #1B294F;
+  color: #FFFFFF;
+  border: 1px solid #34456D;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+/* Card headings */
+.pp-analysis__summary-card .card-label {
+  color: #B9C9EA;
+}
+
+/* Card values */
+.pp-analysis__summary-card .card-value {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+

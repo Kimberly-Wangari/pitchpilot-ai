@@ -24,6 +24,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import "./AgentDashboard.css";
 import "./AgentProfile.css";
+import { getMyTrainingProgress } from "../services/trainingSessionService";
 
 function AgentProfile() {
   const { user, logout, updateProfile } = useAuth();
@@ -40,6 +41,13 @@ function AgentProfile() {
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState("");
   const [logoutError, setLogoutError] = useState("");
+  
+const [trainingProgress, setTrainingProgress] = useState(null);
+
+const [progressLoading, setProgressLoading] = useState(true);
+
+const [progressError, setProgressError] = useState("");
+
 
   useEffect(() => {
     setProfileNames({
@@ -85,6 +93,41 @@ function AgentProfile() {
     setEditFirstName(firstName);
     setEditLastName(lastName);
   };
+  
+useEffect(() => {
+  let active = true;
+
+  async function loadProgress() {
+    setProgressLoading(true);
+    setProgressError("");
+
+    try {
+      const data = await getMyTrainingProgress();
+
+      if (active) {
+        setTrainingProgress(data);
+      }
+    } catch (error) {
+      if (active) {
+        setProgressError(
+          error.response?.data?.message ||
+          "Unable to load training history."
+        );
+      }
+    } finally {
+      if (active) {
+        setProgressLoading(false);
+      }
+    }
+  }
+
+  loadProgress();
+
+  return () => {
+    active = false;
+  };
+}, [user?.id]);
+
 
   const saveProfile = async (event) => {
     event.preventDefault();
@@ -460,45 +503,154 @@ function AgentProfile() {
             )}
           </section>
 
-          {/* TRAINING */}
-          <section className="pap-section">
-            <div className="pd-section-heading">
-              <div>
-                <span className="pd-section-kicker">
-                  YOUR DEVELOPMENT
-                </span>
-                <h2>Training progress</h2>
-                <p>
-                  Your progress will appear here once
-                  training history is connected.
-                </p>
-              </div>
-            </div>
+{/* TRAINING PROGRESS */}
+<section className="pap-section">
 
-            <div className="pap-training-grid">
-              <article className="pap-training-card">
-                <div className="pap-training-icon">
-                  <BookOpen size={23} />
-                </div>
-                <span>Completed sessions</span>
-                <strong>—</strong>
-                <p>
-                  Session tracking is not connected yet.
-                </p>
-              </article>
+  <div className="pd-section-heading">
+    <div>
+      <span className="pd-section-kicker">
+        YOUR DEVELOPMENT
+      </span>
 
-              <article className="pap-training-card">
-                <div className="pap-training-icon">
-                  <Target size={23} />
+      <h2>Training progress</h2>
+
+      <p>
+        Your completed training sessions and
+        saved AI evaluations.
+      </p>
+    </div>
+  </div>
+
+  {progressLoading ? (
+    <p className="pap-progress-state" role="status">
+      Loading training history...
+    </p>
+  ) : progressError ? (
+    <p className="pap-feedback-error" role="alert">
+      {progressError}
+    </p>
+  ) : (
+    <>
+      {/* Progress cards */}
+      <div className="pap-training-grid">
+
+        <article className="pap-training-card">
+          <div className="pap-training-icon">
+            <BookOpen size={23} />
+          </div>
+
+          <span>Completed sessions</span>
+
+          <strong>
+            {trainingProgress?.completedSessions ?? 0}
+          </strong>
+
+          <p>
+            Sessions with a saved, non-mock evaluation.
+          </p>
+        </article>
+
+        <article className="pap-training-card">
+          <div className="pap-training-icon">
+            <Target size={23} />
+          </div>
+
+          <span>Skills practiced</span>
+
+          <strong>
+            {trainingProgress?.skillsPracticed ?? 0}
+          </strong>
+
+          <p>
+            Distinct competencies with recorded
+            evaluation scores.
+          </p>
+        </article>
+
+      </div>
+
+      {/* Skills assessed */}
+      {trainingProgress?.skillNames?.length > 0 && (
+        <div className="pap-skill-panel">
+          <h3>Competencies assessed</h3>
+
+          <div className="pap-skill-list">
+            {trainingProgress.skillNames.map((skill) => (
+              <span
+                key={skill}
+                className="pap-skill-chip"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Saved training history */}
+      <div className="pap-history-panel">
+
+        <h3>Training history &amp; evaluations</h3>
+
+        {trainingProgress?.sessions?.length ? (
+          <ul className="pap-history-list">
+
+            {trainingProgress.sessions.map((session) => (
+              <li
+                className="pap-history-item"
+                key={session.id}
+              >
+                <div>
+                  <strong>{session.scenario}</strong>
+
+                  <span>
+                    {session.completedAt
+                      ? new Date(
+                          session.completedAt
+                        ).toLocaleString("en-KE", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })
+                      : "Completed"}
+
+                   
+                  </span>
                 </div>
-                <span>Skills practiced</span>
-                <strong>—</strong>
-                <p>
-                  Your practiced skills will appear here.
-                </p>
-              </article>
-            </div>
-          </section>
+
+                <div className="pap-history-outcome">
+                  <strong>
+                    {session.overallScore == null
+                      ? "Not scored"
+                      : `${
+                          Math.round(
+                            Number(session.overallScore) * 10
+                          ) / 10
+                        }%`}
+                  </strong>
+
+                  <Link
+                    to={`/session-feedback/${session.id}`}
+                  >
+                    View feedback
+                    <ArrowRight size={15} />
+                  </Link>
+                </div>
+              </li>
+            ))}
+
+          </ul>
+        ) : (
+          <p className="pap-progress-state">
+            No completed evaluations yet.
+            Finish a training scenario to see it here.
+          </p>
+        )}
+
+      </div>
+    </>
+  )}
+
+</section>
 
           <section className="pap-next-step">
             <div>

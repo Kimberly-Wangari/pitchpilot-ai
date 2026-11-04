@@ -1,77 +1,152 @@
 
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import {
+  getTrainingSessionById,
+  getTrainingSessionEvaluation,
+} from "../services/trainingSessionService";
+
+import {
+  getConversationMessages,
+} from "../services/conversationService";
+
 import "./FeedbackAnalysisPage.css";
 
-// DEMO DATA — replace with backend results later
-const demoSession = {
-  id: "PP-001",
-  customer: "Iron",
-  scenario: "Handling a Price Objection",
-  duration: "1hr 24min",
-  turns: 16,
-  completedAt: "11 October 2026",
-  scores: [
-    { name: "Communication Clarity", score: 85 },
-    { name: "Objection Handling", score: 70 },
-    { name: "Customer Engagement", score: 82 },
-    { name: "Persuasive Selling", score: 75 },
-    { name: "Empathy & Active Listening", score: 78 },
-  ],
-  strengths: [
-    "Clearly explained the benefits of inventory management software.",
-    "Maintained a professional and respectful tone.",
-    "Responded to the customer's initial questions confidently.",
-  ],
-  improvements: [
-    "Explore the customer's budget before suggesting a solution.",
-    "Ask more open-ended questions to understand customer needs.",
-    "Address pricing objections with specific value-based explanations.",
-  ],
-  recommendations: [
-    "Practice handling price-sensitive customers.",
-    "Focus on discovery questions before pitching a product.",
-    "Try another scenario involving a skeptical customer.",
-  ],
-  conversation: [
-    {
-      role: "salesperson",
-      message:
-        "Hello Alex! Our inventory software can help you manage your stock more efficiently.",
-    },
-    {
-      role: "customer",
-      message:
-        "That sounds interesting, but I'm running a small shop. How much would it cost?",
-    },
-    {
-      role: "salesperson",
-      message:
-        "It could save you time and reduce errors in your inventory tracking.",
-      feedback:
-        "Good explanation of value, but the customer's pricing concern was not directly addressed.",
-    },
-    {
-      role: "customer",
-      message:
-        "I understand, but I'm still worried about spending too much.",
-    },
-  ],
-};
 
-export default function FeedbackAnalysisPage({
-  session = demoSession,
-  onBack,
-  onPracticeAgain,
-}) {
-  const [activeTab, setActiveTab] = useState("feedback");
+export default function FeedbackAnalysisPage() {
+  const { sessionId } = useParams();
+  const navigate = useNavigate();
 
-  const scores = session.scores || [];
-  const overallScore = scores.length
-    ? Math.round(
-        scores.reduce((sum, item) => sum + item.score, 0) /
-          scores.length
-      )
-    : null;
+  const [activeTab, setActiveTab] =
+    useState("feedback");
+
+  const [sessionData, setSessionData] =
+    useState(null);
+
+  const [evaluation, setEvaluation] =
+    useState(null);
+
+  const [conversation, setConversation] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadFeedback() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const [
+          sessionResponse,
+          evaluationResponse,
+          conversationResponse,
+        ] = await Promise.all([
+          getTrainingSessionById(sessionId),
+          getTrainingSessionEvaluation(sessionId),
+          getConversationMessages(sessionId),
+        ]);
+
+        if (!mounted) return;
+
+        setSessionData(sessionResponse.session);
+        setEvaluation(evaluationResponse.evaluation);
+        setConversation(
+          conversationResponse.messages || []
+        );
+
+      } catch (err) {
+        if (mounted) {
+          setError(
+            err.response?.data?.message ||
+            "Unable to load your feedback report."
+          );
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    loadFeedback();
+
+    return () => {
+      mounted = false;
+    };
+  }, [sessionId]);
+
+  const onBack = () => navigate("/dashboard");
+
+  const onPracticeAgain = () =>
+    navigate("/scenarios");
+
+  if (loading) {
+    return <p>Loading your performance report...</p>;
+  }
+
+  if (error) {
+    return (
+      <main className="pp-analysis">
+        <p role="alert">{error}</p>
+        <button onClick={onBack}>
+          Back to Dashboard
+        </button>
+      </main>
+    );
+  }
+
+  if (!sessionData || !evaluation) {
+    return <p>Feedback report not found.</p>;
+  }
+
+  // Convert Gemini's 0–5 scores into percentages
+  const scores = Object.entries(
+    evaluation.scores || {}
+  )
+    .filter(([, value]) =>
+      typeof value === "number" &&
+      Number.isFinite(value)
+    )
+    .map(([name, value]) => ({
+      name,
+      score: Math.round(value * 20),
+    }));
+
+  const overallScore =
+    evaluation.overall_score == null
+      ? null
+      : Number(evaluation.overall_score);
+
+  const session = {
+    id: sessionId,
+    customer:
+      typeof sessionData.customer_persona === "string"
+        ? sessionData.customer_persona
+        : "Simulated Customer",
+    scenario: sessionData.title,
+    duration: "Not recorded",
+    turns: conversation.length,
+    scores,
+    strengths: evaluation.strengths || [],
+    improvements: evaluation.improvements || [],
+    recommendations: evaluation.improvements || [],
+    feedback: evaluation.feedback || "",
+    conversation: conversation.map((msg) => ({
+      role:
+        msg.sender === "customer"
+          ? "customer"
+          : "salesperson",
+      message: msg.content,
+    })),
+  };
+
 
   return (
     <main className="pp-analysis">
@@ -155,9 +230,7 @@ export default function FeedbackAnalysisPage({
                 Your performance summary across the assessed
                 sales competencies.
               </p>
-              <span className="pp-analysis__demo">
-                Demonstration scores
-              </span>
+              
             </section>
 
             <section className="pp-analysis__card">
@@ -200,6 +273,7 @@ export default function FeedbackAnalysisPage({
               items={session.improvements}
             />
           </div>
+          <p>{session.feedback}</p>
 
           <section className="pp-analysis__card">
             <h2>Personalized Recommendations</h2>

@@ -1,5 +1,6 @@
 
 const pool = require("../config/database");
+const aiProvider = require("../services/aiProvider");
 
 const MAX_MESSAGE_LENGTH = 4000;
 const MODEL_TIMEOUT_MS = 120000;
@@ -76,26 +77,9 @@ const sendConversationMessage = async (req, res) => {
     });
   }
 
-  const endpoint = process.env.PITCHPILOT_INFERENCE_URL;
-  const apiKey = process.env.PITCHPILOT_INFERENCE_API_KEY;
-
-  if (!endpoint || !apiKey) {
+  if (!aiProvider.isReady("chat")) {
     return res.status(503).json({
-      message: "The AI customer is not configured yet.",
-    });
-  }
-
-  let url;
-
-  try {
-    url = new URL(endpoint);
-
-    if (!["http:", "https:"].includes(url.protocol)) {
-      throw new Error("Unsupported URL protocol");
-    }
-  } catch {
-    return res.status(503).json({
-      message: "Invalid model endpoint configuration.",
+      message: "AI customer provider is not configured.",
     });
   }
 
@@ -114,6 +98,7 @@ const sendConversationMessage = async (req, res) => {
     }
 
     const session = sessionResult.rows[0];
+
 
     if (session.status !== "in_progress") {
       return res.status(409).json({
@@ -182,55 +167,29 @@ const sendConversationMessage = async (req, res) => {
         ),
       }));
 
-    // Generate the simulated customer's response
-    let modelResponse;
+    
+    // Generate customer reply 
+    let generated;
 
     try {
-      modelResponse = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": apiKey,
-        },
-        body: JSON.stringify({
-          persona,
-          message: message.trim(),
-          history,
-        }),
-        signal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
+      generated = await aiProvider.customerReply({
+        persona,
+        message: message.trim(),
+        history,
       });
     } catch (error) {
-      console.error("Model connection error:", error.message);
-
-      return res.status(
-        error.name === "TimeoutError" ? 504 : 502
-      ).json({
-        message:
-          "The AI customer is temporarily unreachable. Your message was not saved.",
-      });
-    }
-
-    if (!modelResponse.ok) {
       console.error(
-        "Model API returned status:",
-        modelResponse.status
+        "AI customer provider failed:",
+        error.message
       );
 
       return res.status(502).json({
         message:
-          "The AI customer could not generate a response.",
+          "The AI customer is temporarily unavailable. Your message was not saved.",
       });
     }
 
-    let generated;
 
-    try {
-      generated = await modelResponse.json();
-    } catch {
-      return res.status(502).json({
-        message: "The AI customer returned an invalid response.",
-      });
-    }
 
     const customerReply = generated?.customer_response;
 

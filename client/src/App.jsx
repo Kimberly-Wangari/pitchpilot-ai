@@ -138,10 +138,13 @@ function App() {
       />
 
       <Route
-        path="/session-feedback"
-        element={<FeedbackAnalysisPage />}
-      />
-
+  path="/session-feedback/:sessionId"
+  element={
+    <ProtectedRoute>
+      <FeedbackAnalysisPage />
+    </ProtectedRoute>
+  }
+/>
       {/* =====================================
           MANAGER ROUTES
       ===================================== */}

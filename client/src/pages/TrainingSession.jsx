@@ -1,6 +1,10 @@
 
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useParams,
+  useNavigate,
+} from "react-router-dom";
 
 import {
   ArrowLeft,
@@ -114,6 +118,7 @@ function ChatMessage({ message }) {
 
 export default function TrainingSession() {
   const { sessionId } = useParams();
+  const navigate = useNavigate();
 
   // Session state
   const [session, setSession] = useState(null);
@@ -326,17 +331,20 @@ export default function TrainingSession() {
     setEvaluationError("");
 
     try {
-      const result =
-        await endAndEvaluateTrainingSession(sessionId);
+      
+const result =
+  await endAndEvaluateTrainingSession(sessionId);
 
-      setEvaluation(result.evaluation);
-      setShowFeedback(true);
+if (!result.evaluation) {
+  throw new Error("Evaluation result is missing");
+}
 
-      setSession((previous) => ({
-        ...previous,
-        status: "completed",
-        completed_at: new Date().toISOString(),
-      }));
+// Navigate only after the backend successfully
+// saves the completed evaluation.
+navigate(`/session-feedback/${sessionId}`, {
+  replace: true,
+});
+
     } catch (err) {
       console.error(
         "Training evaluation error:",
