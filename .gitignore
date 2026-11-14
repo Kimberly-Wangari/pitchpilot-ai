@@ -39,3 +39,15 @@ venv/
 ai/datasets/raw/
 ai/checkpoints/
 ai/models/
+
+# Model files
+*.safetensors
+*.gguf
+*.bin
+*.pt
+*.pth
+
+# Hugging Face local caches
+.cache/
+models/
+checkpoints/
