@@ -314,51 +314,41 @@ export default function TrainingSession() {
   // End and evaluate training session
   // ------------------------------------
 
-  const handleEndAndEvaluate = async () => {
-    if (!canEvaluate) {
-      return;
-    }
+const handleEndAndEvaluate = async () => {
+  if (!canEvaluate) {
+    return;
+  }
 
-    const confirmed = window.confirm(
-      "End this training session and generate your performance feedback? You won't be able to send more messages afterward."
+  // Immediately begin evaluation without a browser popup
+  setEvaluating(true);
+  setEvaluationError("");
+
+  try {
+    // Uses your existing backend evaluation endpoint
+    const result = await endAndEvaluateTrainingSession(sessionId);
+
+    // Save the returned evaluation in component state
+    setEvaluation(result.evaluation);
+    setShowFeedback(true);
+
+    // Mark this training session as completed
+    setSession((previous) => ({
+      ...previous,
+      status: "completed",
+      completed_at: new Date().toISOString(),
+    }));
+
+  } catch (err) {
+    console.error("Training evaluation error:", err);
+
+    setEvaluationError(
+      err.response?.data?.message ||
+      "Unable to evaluate your training session. Please try again."
     );
-
-    if (!confirmed) {
-      return;
-    }
-
-    setEvaluating(true);
-    setEvaluationError("");
-
-    try {
-      
-const result =
-  await endAndEvaluateTrainingSession(sessionId);
-
-if (!result.evaluation) {
-  throw new Error("Evaluation result is missing");
-}
-
-// Navigate only after the backend successfully
-// saves the completed evaluation.
-navigate(`/session-feedback/${sessionId}`, {
-  replace: true,
-});
-
-    } catch (err) {
-      console.error(
-        "Training evaluation error:",
-        err
-      );
-
-      setEvaluationError(
-        err.response?.data?.message ||
-          "Unable to evaluate your training session. Please try again."
-      );
-    } finally {
-      setEvaluating(false);
-    }
-  };
+  } finally {
+    setEvaluating(false);
+  }
+};
 
   // ------------------------------------
   // Send conversation message
@@ -885,7 +875,8 @@ navigate(`/session-feedback/${sessionId}`, {
 
             {/* Message composer */}
 
-            <div className="pp-composer-area">
+            {active && (
+  <div className="pp-composer-area">
 
               {messageError && (
                 <div
@@ -972,8 +963,9 @@ navigate(`/session-feedback/${sessionId}`, {
                 <ShieldCheck size={13} />
                 Practice environment · Messages saved
                 to your session
-              </p>
-            </div>
+                    </p>
+    </div>
+)}
           </section>
 
           {/* Scenario briefing sidebar */}
