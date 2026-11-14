@@ -1,0 +1,77 @@
+
+.manager-login-label {
+  display: inline-block;
+  margin: 24px 0 12px;
+  color: #7775bd;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.7px;
+}
+
+/* GOOGLE LOGIN SECTION */
+
+.manager-google-login {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Preserve the existing SocialLogin design */
+
+.manager-google-login button {
+  cursor: pointer;
+}
+
+/* AGENT LOGIN LINK */
+
+.manager-google-login + .auth-footer {
+  margin-top: 24px;
+}
+
+/* MANAGER ACCOUNT NOTE */
+
+.manager-login-note {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 12px;
+  color: #9298a8;
+  line-height: 1.6;
+}
+
+.auth-manager-image {
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(13, 22, 48, 0.05) 0%,
+      rgba(13, 22, 48, 0.15) 40%,
+      rgba(13, 22, 48, 0.72) 100%
+    ),
+    url("/images/manager-green-hills.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* IMAGE OVERLAY TEXT */
+
+.auth-manager-image .auth-image-overlay {
+  color: #ffffff;
+}
+
+.auth-manager-image .auth-image-overlay h2 {
+  color: #ffffff;
+}
+
+.auth-manager-image .auth-image-overlay p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 768px) {
+  .manager-login-label {
+    margin-top: 18px;
+  }
+
+  .manager-google-login {
+    margin-top: 8px;
+  }
+}

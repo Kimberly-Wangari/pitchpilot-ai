@@ -1,63 +1,199 @@
-import { useEffect, useState } from "react";
+
+import { Navigate, Route, Routes } from "react-router-dom";
+
+// ==========================================
+// PUBLIC PAGES
+// ==========================================
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import OAuthCallbackPage from "./pages/OAuthCallbackPage";
+
+// ==========================================
+// AGENT PAGES
+// ==========================================
+import AgentDashboard from "./pages/AgentDashboard";
+import AgentProfile from "./pages/AgentProfile";
+import ScenarioLibrary from "./pages/scenarioLibrary";
+import ScenarioDetails from "./pages/ScenarioDetails";
+import TrainingSession from "./pages/TrainingSession";
+import FeedbackAnalysisPage from "./pages/FeedbackAnalysisPage";
+
+// ==========================================
+// MANAGER PAGES
+// ==========================================
+import ManagerDashboard from "./pages/ManagerDashboard";
+import ManagerProfile from "./pages/ManagerProfile";
+import ManagerLogin from "./pages/ManagerLogin";
+import ManagerActivation from "./pages/ManagerActivation";
+
+// ==========================================
+// ADMIN PAGES
+// ==========================================
+import AdminDashboard from "./pages/AdminDashboard";
+
+// ==========================================
+// ROUTE PROTECTION
+// ==========================================
+import ProtectedRoute from "./components/ProtectedRoute";
+import ManagerRoute from "./components/ManagerRoute";
+import AdminRoute from "./components/AdminRoute";
+
+// ==========================================
+// STYLES
+// ==========================================
 import "./App.css";
 
 function App() {
-  const [apiStatus, setApiStatus] = useState("Checking API...");
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api/health")
-      .then((response) => response.json())
-      .then((data) => {
-        setApiStatus(data.status);
-      })
-      .catch(() => {
-        setApiStatus("offline");
-      });
-  }, []);
-
   return (
-    <div className="app">
-      <header className="navbar">
-        <h2>PitchPilot AI</h2>
+    <Routes>
+      {/* =====================================
+          PUBLIC ROUTES
+      ===================================== */}
 
-        <nav>
-          <a href="#features">Features</a>
-          <a href="#about">About</a>
-          <button>Login</button>
-        </nav>
-      </header>
+      <Route
+        path="/"
+        element={<LandingPage />}
+      />
 
-      <main className="hero">
-        <div className="hero-content">
-          <p className="tag">AI-POWERED SALES TRAINING</p>
+      <Route
+        path="/login"
+        element={<LoginPage />}
+      />
 
-          <h1>
-            Practice conversations.
-            <br />
-            Improve your sales.
-          </h1>
+      <Route
+        path="/register"
+        element={<RegisterPage />}
+      />
 
-          <p className="description">
-            Train with realistic AI-powered customer simulations, receive
-            personalized feedback and develop the conversational skills needed
-            for real sales interactions.
-          </p>
+      <Route
+        path="/forgot-password"
+        element={<ForgotPasswordPage />}
+      />
 
-          <div className="actions">
-            <button className="primary-button">
-              Start Training
-            </button>
+      {/* Google OAuth callback */}
+      <Route
+        path="/auth/callback"
+        element={<OAuthCallbackPage />}
+      />
 
-            <button className="secondary-button">
-              Learn More
-            </button>
-          </div>
-        </div>
-      </main>
-      <footer className="footer">
-        <p>API Status: {apiStatus}</p>
-      </footer>
-    </div>
+      {/* =====================================
+          MANAGER INVITATION ACTIVATION
+          Public route: no login required
+      ===================================== */}
+
+      <Route
+        path="/manager/activate"
+        element={<ManagerActivation />}
+      />
+
+      {/* =====================================
+          AGENT ROUTES
+      ===================================== */}
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <AgentDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <AgentProfile />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/scenarios"
+        element={
+          <ProtectedRoute>
+            <ScenarioLibrary />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/scenarios/:id"
+        element={
+          <ProtectedRoute>
+            <ScenarioDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/training/:sessionId"
+        element={
+          <ProtectedRoute>
+            <TrainingSession />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+  path="/session-feedback/:sessionId"
+  element={
+    <ProtectedRoute>
+      <FeedbackAnalysisPage />
+    </ProtectedRoute>
+  }
+/>
+      {/* =====================================
+          MANAGER ROUTES
+      ===================================== */}
+
+      <Route
+        path="/manager/login"
+        element={<ManagerLogin />}
+      />
+
+      <Route
+        path="/manager/dashboard"
+        element={
+          <ManagerRoute>
+            <ManagerDashboard />
+          </ManagerRoute>
+        }
+      />
+
+      <Route
+        path="/manager/profile"
+        element={
+          <ManagerRoute>
+            <ManagerProfile />
+          </ManagerRoute>
+        }
+      />
+
+      {/* =====================================
+          ADMIN ROUTES
+      ===================================== */}
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+
+      {/* =====================================
+          FALLBACK ROUTE
+      ===================================== */}
+
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
+      />
+    </Routes>
   );
 }
 
