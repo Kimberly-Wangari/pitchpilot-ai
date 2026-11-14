@@ -15,7 +15,7 @@ import OAuthCallbackPage from "./pages/OAuthCallbackPage";
 // ==========================================
 import AgentDashboard from "./pages/AgentDashboard";
 import AgentProfile from "./pages/AgentProfile";
-import ScenarioLibrary from "./pages/scenarioLibrary";
+import ScenarioLibrary from "./pages/ScenarioLibrary";
 import ScenarioDetails from "./pages/ScenarioDetails";
 import TrainingSession from "./pages/TrainingSession";
 import FeedbackAnalysisPage from "./pages/FeedbackAnalysisPage";
