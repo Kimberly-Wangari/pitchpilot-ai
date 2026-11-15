@@ -42,28 +42,29 @@ export default function OAuthCallbackPage() {
 
         // Redirect based on role
         switch (role) {
-           case "admin":
+  case "admin":
     navigate("/admin/dashboard", {
       replace: true,
     });
     break;
-          case "manager":
-            navigate("/manager/dashboard", {
-              replace: true,
-            });
-            break;
 
-          case "agent":
-            navigate("/dashboard", {
-              replace: true,
-            });
-            break;
+  case "manager":
+    navigate("/manager/dashboard", {
+      replace: true,
+    });
+    break;
 
-          default:
-            navigate("/", {
-              replace: true,
-            });
-        }
+  case "agent":
+    navigate("/dashboard", {
+      replace: true,
+    });
+    break;
+
+  default:
+    navigate("/", {
+      replace: true,
+    });
+}
       } catch (error) {
         console.error(
           "OAuth authentication failed:",
