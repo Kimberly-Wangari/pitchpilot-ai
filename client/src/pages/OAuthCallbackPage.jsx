@@ -42,6 +42,11 @@ export default function OAuthCallbackPage() {
 
         // Redirect based on role
         switch (role) {
+           case "admin":
+    navigate("/admin/dashboard", {
+      replace: true,
+    });
+    break;
           case "manager":
             navigate("/manager/dashboard", {
               replace: true,
