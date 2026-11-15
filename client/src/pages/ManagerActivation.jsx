@@ -4,7 +4,8 @@ import { Link, useSearchParams } from "react-router-dom";
 import "./ManagerActivation.css";
 
 const API_BASE_URL = (
-  import.meta.env.VITE_API_URL || "http://localhost:5000"
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000/api"
 ).replace(/\/+$/, "");
 
 function ManagerActivation() {
@@ -33,7 +34,7 @@ function ManagerActivation() {
         setStatus("loading");
 
         const response = await fetch(
-          `${API_BASE_URL}/api/auth/manager-invitation?token=${encodeURIComponent(token)}`,
+          `${API_BASE_URL}/auth/manager-invitation?token=${encodeURIComponent(token)}`,
           {
             method: "GET",
             signal: controller.signal,
@@ -97,7 +98,7 @@ function ManagerActivation() {
       setSubmitting(true);
 
       const response = await fetch(
-        `${API_BASE_URL}/api/auth/activate-manager`,
+       `${API_BASE_URL}/auth/activate-manager`,
         {
           method: "POST",
           headers: {
