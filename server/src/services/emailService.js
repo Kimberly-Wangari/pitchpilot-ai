@@ -1,44 +1,57 @@
 
-const nodemailer = require("nodemailer");
+const RESEND_API_URL = "https://api.resend.com/emails";
 
-let transporter;
+// --------------------------------------------
+// Shared email delivery using Resend HTTPS API
+// --------------------------------------------
+async function sendEmail({ to, subject, text, html }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
 
-// Configure the email service using environment variables.
-function getTransporter() {
-  const required = [
-    "SMTP_HOST",
-    "SMTP_PORT",
-    "SMTP_USER",
-    "SMTP_PASS",
-    "EMAIL_FROM",
-  ];
-
-  const missing = required.filter(
-    (name) => !process.env[name]
-  );
-
-  if (missing.length > 0) {
+  if (!apiKey || !from) {
     throw new Error(
-      `Missing email configuration: ${missing.join(", ")}`
+      "Missing RESEND_API_KEY or EMAIL_FROM configuration"
     );
   }
 
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: process.env.SMTP_SECURE === "true",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+  const response = await fetch(RESEND_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject,
+      text,
+      html,
+    }),
+    signal: AbortSignal.timeout(30000),
+  });
+
+  if (!response.ok) {
+    const errorData = await response
+      .json()
+      .catch(() => ({}));
+
+    console.error("Resend email error:", {
+      status: response.status,
+      name: errorData.name,
+      message: errorData.message,
     });
+
+    throw new Error(
+      `Email delivery failed (HTTP ${response.status})`
+    );
   }
 
-  return transporter;
+  return response.json();
 }
 
-// Send a verification code for registration, login, or reset.
+// --------------------------------------------
+// Registration, login and password-reset OTP
+// --------------------------------------------
 async function sendOtpEmail({ email, code, purpose }) {
   const action =
     purpose === "register"
@@ -47,8 +60,7 @@ async function sendOtpEmail({ email, code, purpose }) {
       ? "reset your password"
       : "complete your login";
 
-  await getTransporter().sendMail({
-    from: process.env.EMAIL_FROM,
+  return sendEmail({
     to: email,
     subject: "Your PitchPilot AI verification code",
 
@@ -67,9 +79,12 @@ If you did not request this code, you can ignore this email.
         font-family: Arial, sans-serif;
         max-width: 520px;
         margin: auto;
+        padding: 24px;
         color: #111827;
       ">
-        <h2>PitchPilot AI verification</h2>
+        <h2 style="color: #312e81;">
+          PitchPilot AI Verification
+        </h2>
 
         <p>Use this code to ${action}:</p>
 
@@ -88,13 +103,27 @@ If you did not request this code, you can ignore this email.
           If you did not request this code,
           you can ignore this email.
         </p>
+
+        <hr style="
+          border: none;
+          border-top: 1px solid #e5e7eb;
+          margin-top: 28px;
+        ">
+
+        <p style="
+          font-size: 12px;
+          color: #94a3b8;
+        ">
+          PitchPilot AI — Sales Training Platform
+        </p>
       </div>
     `,
   });
 }
 
-// Send a secure account activation invitation to a
-// manager created by a platform administrator.
+// --------------------------------------------
+// Manager activation invitation emails
+// --------------------------------------------
 async function sendManagerInvitationEmail({
   email,
   firstName,
@@ -129,8 +158,7 @@ async function sendManagerInvitationEmail({
   const nameHtml = escapeHtml(safeFirstName);
   const urlHtml = escapeHtml(invitationUrl);
 
-  await getTransporter().sendMail({
-    from: process.env.EMAIL_FROM,
+  return sendEmail({
     to: email,
     subject: "You're invited to manage on PitchPilot AI",
 
@@ -205,19 +233,30 @@ PitchPilot AI Team
 
         <p>
           This invitation expires in
-          <strong>${expiresInHours} hours</strong>.
+          ${expiresInHours} hours.
         </p>
 
-        <p style="font-size: 13px; color: #64748b;">
+        <p style="
+          font-size: 13px;
+          color: #64748b;
+        ">
           If the button does not work, copy and paste
           this link into your browser:
         </p>
 
-        <p style="font-size: 12px; overflow-wrap: anywhere;">
-          <a href="${urlHtml}">${urlHtml}</a>
+        <p style="
+          font-size: 12px;
+          overflow-wrap: anywhere;
+        ">
+          <a href="${urlHtml}">
+            ${urlHtml}
+          </a>
         </p>
 
-        <p style="font-size: 13px; color: #64748b;">
+        <p style="
+          font-size: 13px;
+          color: #64748b;
+        ">
           Do not share this invitation link.
           If you did not expect this invitation,
           you can ignore this email.
@@ -229,7 +268,10 @@ PitchPilot AI Team
           margin-top: 28px;
         ">
 
-        <p style="font-size: 12px; color: #94a3b8;">
+        <p style="
+          font-size: 12px;
+          color: #94a3b8;
+        ">
           PitchPilot AI — Sales Training Platform
         </p>
       </div>
