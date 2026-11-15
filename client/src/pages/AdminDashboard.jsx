@@ -1293,6 +1293,69 @@ export default function AdminDashboard() {
   </div>
 </div>
 
+{/* CONFIRM AGENT PROMOTION */}
+{promoteUser && (
+  <div
+    className="pa-confirm-backdrop"
+    onClick={() => {
+      if (!promoting) setPromoteUser(null);
+    }}
+  >
+    <div
+      className="pa-confirm-dialog"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="pa-promote-title"
+      aria-describedby="pa-promote-description"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="pa-confirm-icon">
+        <ArrowUpCircle size={25} />
+      </div>
+
+      <h3 id="pa-promote-title">
+        Promote to Sales Manager?
+      </h3>
+
+      <p id="pa-promote-description">
+        You are about to promote{" "}
+        <strong>
+          {promoteUser.firstName}{" "}
+          {promoteUser.lastName}
+        </strong>{" "}
+        ({promoteUser.email}) to Sales Manager.
+      </p>
+
+      <p className="pa-confirm-note">
+        This account will gain manager permissions
+        and access to the Manager Dashboard.
+      </p>
+
+      <div className="pa-confirm-actions">
+        <button
+          type="button"
+          className="pa-confirm-cancel"
+          disabled={promoting}
+          onClick={() => setPromoteUser(null)}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="pa-confirm-approve"
+          disabled={promoting}
+          onClick={handlePromote}
+        >
+          {promoting
+            ? "Promoting..."
+            : "Yes, promote"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
 
 <AdminUserManagement onChanged={loadDashboard} />
